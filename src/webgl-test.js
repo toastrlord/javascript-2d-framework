@@ -1,8 +1,8 @@
 'use strict'
 
-import {createProgramFromScripts, resizeCanvasToDisplaySize} from "./webgl-utils";
+import {createProgramFromScripts, resizeCanvasToDisplaySize} from './webgl-utils';
 
-function draw(positions, color) {
+function draw(positions, colors) {
     /**{HTMLCanvasElement} */
     const canvas = document.querySelector('#canvas');
     const gl = canvas.getContext('webgl');
@@ -12,20 +12,22 @@ function draw(positions, color) {
 
     // setup shaders
     const vertexShaderSource = document.querySelector('#pixel-vertex-shader-2d').textContent;
-    const fragmentShaderSource = document.querySelector('#uniform-color-fragment-shader-2d').textContent;
+    const fragmentShaderSource = document.querySelector('#color-fragment-shader-2d').textContent;
 
     const program = createProgramFromScripts(gl, vertexShaderSource, fragmentShaderSource);
 
     let positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
     let positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
     let resolutionUniformLocation = gl.getUniformLocation(program, 'u_resolution');
 
-    let colorUniformLocation = gl.getUniformLocation(program, 'u_color');
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+    let colorBuffer = gl.createBuffer();
+    let colorAttributeLocation = gl.getAttribLocation(program, 'a_color');
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+    
     resizeCanvasToDisplaySize(gl.canvas);
 
     // setup clip space to screen space relationship
@@ -47,9 +49,6 @@ function draw(positions, color) {
     // set the resolution uniform
     gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
 
-    // set the color
-    gl.uniform4f(colorUniformLocation, ...color);
-
     // Tell the attribute how to get data out of positionBuffer
     let size = 2 // 2 components per iteration
     let type = gl.FLOAT // data is 32 bit floats
@@ -64,6 +63,19 @@ function draw(positions, color) {
         stride,
         offset
     );
+
+    gl.enableVertexAttribArray(colorAttributeLocation);
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+
+    gl.vertexAttribPointer(
+        colorAttributeLocation,
+        4,
+        gl.FLOAT,
+        normalize,
+        stride,
+        offset
+    );
+    
 
     let primitiveType = gl.TRIANGLES; // every 3 times the shader is run, a triangle will be drawn with the 3 points
     offset = 0;

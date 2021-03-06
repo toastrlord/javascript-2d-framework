@@ -32,4 +32,21 @@ let yellow = [
     1,
 ];
 
-draw(triforce, yellow);
+function sameColor(positions, color) {
+    let result = [];
+    for (let i = 0; i < positions.length; i += 2) {
+        result.push(...color);
+    }
+    return result;
+}
+function randomColor(positions) {
+    let result = [];
+    for (let i = 0; i < positions.length; i += 2) {
+        let r = Math.random();
+        let g = Math.random();
+        let b = Math.random();
+        result.push(...[r, g, b, 1]);
+    }
+    return result;
+}
+draw(triforce, randomColor(triforce));
