@@ -1,5 +1,6 @@
-import './webgl-test'
+'use strict'
 import draw from './webgl-test'
+
 let points = [
     0, 0,
     150, 0,
@@ -22,6 +23,13 @@ let triforce = [
     75, 75,
     225, 75,
     150, 150,
-]
+];
 
-draw(triforce);
+let yellow = [
+    1,
+    1,
+    0,
+    1,
+];
+
+draw(triforce, yellow);

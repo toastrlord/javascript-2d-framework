@@ -2,16 +2,17 @@
 
 import {createProgramFromScripts, resizeCanvasToDisplaySize} from "./webgl-utils";
 
-function draw(positions) {
+function draw(positions, color) {
+    /**{HTMLCanvasElement} */
     const canvas = document.querySelector('#canvas');
     const gl = canvas.getContext('webgl');
     if (!gl) {
         alert('Error loading WebGL!');
     }
-    
+
     // setup shaders
     const vertexShaderSource = document.querySelector('#pixel-vertex-shader-2d').textContent;
-    const fragmentShaderSource = document.querySelector('#fragment-shader-2d').textContent;
+    const fragmentShaderSource = document.querySelector('#uniform-color-fragment-shader-2d').textContent;
 
     const program = createProgramFromScripts(gl, vertexShaderSource, fragmentShaderSource);
 
@@ -19,6 +20,8 @@ function draw(positions) {
     let positionBuffer = gl.createBuffer();
 
     let resolutionUniformLocation = gl.getUniformLocation(program, 'u_resolution');
+
+    let colorUniformLocation = gl.getUniformLocation(program, 'u_color');
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
@@ -43,6 +46,9 @@ function draw(positions) {
 
     // set the resolution uniform
     gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
+
+    // set the color
+    gl.uniform4f(colorUniformLocation, ...color);
 
     // Tell the attribute how to get data out of positionBuffer
     let size = 2 // 2 components per iteration

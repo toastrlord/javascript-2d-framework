@@ -31,7 +31,7 @@
             gl_Position = vec4(clipSpace, 0, 1);
         }
     </script>
-    <script id='fragment-shader-2d' type='notjs'>
+    <script id='static-color-fragment-shader-2d' type='notjs'>
         // fragment shaders do not have a default precision
         // so it needs to be set here
         precision mediump float;
@@ -39,6 +39,15 @@
         void main() {
             // gl_FragColor is a special var for fragment shaders
             gl_FragColor = vec4(1, 0, 0.5, 1); //reddish-purple color
+        }
+    </script>
+    <script id='uniform-color-fragment-shader-2d' type='notjs'>
+        precision mediump float;
+
+        uniform vec4 u_color;
+
+        void main() {
+            gl_FragColor = u_color;
         }
     </script>
     <body>

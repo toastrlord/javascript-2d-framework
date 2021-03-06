@@ -29,6 +29,12 @@ function createProgram(gl, vertexShader, fragmentShader) {
     gl.deleteProgram(program);
 }
 
+/**
+ * Compiles GLSL program given the source code for vertex and fragment shaders
+ * @param {*} gl 
+ * @param {string} vertexSource 
+ * @param {string} fragmentSource 
+ */
 function createProgramFromScripts(gl, vertexSource, fragmentSource) {
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexSource);
     const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
