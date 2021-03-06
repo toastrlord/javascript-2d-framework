@@ -1,5 +1,5 @@
 'use strict'
-import {draw, setContext, makeProgram, useProgram, clear} from './webgl-test';
+import {draw, setContext, makeProgram, useProgramData, clear} from './webgl-test';
 
 const canvas = document.querySelector('#canvas');
 const width = canvas.width;
@@ -73,8 +73,8 @@ function generateRandomTriangle() {
 
 function webGLSetup() {
     setContext(canvas);
-    const basicProgram = makeProgram(document.querySelector('#pixel-vertex-shader-2d').textContent, document.querySelector('#color-fragment-shader-2d').textContent)
-    useProgram(basicProgram);
+    const basicProgramData = makeProgram(document.querySelector('#pixel-vertex-shader-2d').textContent, document.querySelector('#color-fragment-shader-2d').textContent)
+    useProgramData(basicProgramData);
 }
 
 webGLSetup();
@@ -86,7 +86,7 @@ window.setInterval(function(){
     let newColor = randomColor(newGeometry);
     geometry.push(...newGeometry);
     color.push(...newColor);
-    draw(geometry, color);
+    draw({a_position: geometry, a_color: color});
 }, 500);
 
 window.setInterval(function(){

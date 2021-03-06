@@ -1,9 +1,9 @@
 'use strict'
 
 import {createProgramFromScripts, resizeCanvasToDisplaySize} from './webgl-utils';
-
+/** @type {WebGLRenderingContext} */
 let gl;
-let currentProgram;
+let currentProgramData;
 
 /** 
  * Setup the WebGL render context
@@ -30,30 +30,35 @@ function makeProgram(vertexSource, shaderSource) {
 }
 
 /**
- * Set this to be the current active program
- * @param {WebGLProgram} program 
+ * Set this to be the current active program data (object containing WebGL program and attribute/uniform info)
+ * @param {*} programData 
  */
-function useProgram(program) {
-    currentProgram = program;
-    gl.useProgram(program); 
+function useProgramData(programData) {
+    currentProgramData = programData;
+    gl.useProgram(currentProgramData.program); 
 }
 
 /**
  * Clears the current canvas
- * @param {Number[]} color
+ * @param {Number[]} color Color in [r, g, b, a] format
  */
 function clear(color) {
     gl.clearColor(...color);
     gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
+function setupAttribBuffer(attribData, values, usage) {
+    let buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(values), usage);
+    gl.enableVertexAttribArray(attribData.location);
+    gl.vertexAttribPointer(attribData.location, attribData.size, attribData.type, false, 0 , 0);
+}
 
 /**
- * Draw the given vertices using the given colors. Fails if webGL is not initialized and a program is not loaded
- * @param {*} positions 
- * @param {*} colors 
+ * Draw using the supplied values. Fails if webGL is not initialized and a program is not loaded, or if values do not match the attributes/uniforms
  */
-function draw(positions, colors) {
+function draw(values) {
     /**{HTMLCanvasElement} */
     if (!gl) {
         alert('WebGL context must be initialized before calling draw!');
@@ -66,22 +71,19 @@ function draw(positions, colors) {
     *  -call bufferdata with the input
     *  -call vertexAttribPointer with the necessary information
     */
+   // iterate over each attribute, and extract the data from values
+   // presumes values has a field for each attribute name
+    Object.keys(currentProgramData.attributeData).forEach(attributeName => {
+        setupAttribBuffer(currentProgramData.attributeData[attributeName], values[attributeName], gl.STATIC_DRAW);
+    });
 
     /* for uniforms:
     *  -get the uniform location
     *  -set the uniform
     */
-    let positionAttributeLocation = gl.getAttribLocation(currentProgram, 'a_position');
-    let positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+    
 
-    let resolutionUniformLocation = gl.getUniformLocation(currentProgram, 'u_resolution');
-
-    let colorBuffer = gl.createBuffer();
-    let colorAttributeLocation = gl.getAttribLocation(currentProgram, 'a_color');
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+    let resolutionUniformLocation = gl.getUniformLocation(currentProgramData.program, 'u_resolution');
     
     resizeCanvasToDisplaySize(gl.canvas);
 
@@ -89,14 +91,10 @@ function draw(positions, colors) {
     // map -1, +1 to 0, width, ... etc
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-    gl.enableVertexAttribArray(positionAttributeLocation);
-
-    // Bind the position buffer
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
     // set the resolution uniform
     gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
 
+    /*
     // Tell the attribute how to get data out of positionBuffer
     let size = 2 // 2 components per iteration
     let type = gl.FLOAT // data is 32 bit floats
@@ -110,25 +108,12 @@ function draw(positions, colors) {
         normalize,
         stride,
         offset
-    );
-
-    gl.enableVertexAttribArray(colorAttributeLocation);
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-
-    gl.vertexAttribPointer(
-        colorAttributeLocation,
-        4,
-        gl.FLOAT,
-        normalize,
-        stride,
-        offset
-    );
-    
+    );*/
 
     let primitiveType = gl.TRIANGLES; // every 3 times the shader is run, a triangle will be drawn with the 3 points
-    offset = 0;
-    let count = positions.length / size; // execute the vertex shader once for every pair of points provided
+    let offset = 0;
+    let count = values['a_position'].length / 2; // execute the vertex shader once for every pair of points provided
     gl.drawArrays(primitiveType, offset, count);
 }
 
-export {setContext, makeProgram, useProgram, draw, clear};
+export {setContext, makeProgram, useProgramData, draw, clear};

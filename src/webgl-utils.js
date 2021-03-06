@@ -20,14 +20,44 @@ function createShader(gl, type, source) {
     gl.deleteShader(shader);
 }
 
+/**
+ * Extract all attribute and uniforms in this program, and record their locations
+ * @param {WebGLRenderingContext} gl 
+ * @param {WebGLProgram} program 
+ * @param {WebGLShader} vertexShaderProgram 
+ * @param {WebGLShader} fragmentShaderProgram 
+ */
 function extractProgramData(gl, program, vertexShaderProgram, fragmentShaderProgram) {
-    function processLine(line, container) {
+    /**
+     * Process a line of GLSL code into a attribute/uniform data object
+     * @param {string} line GLSL Code to be processed
+     * @param {*} container Container to place attribute (either attributeData or uniformData)
+     * @param {boolean} isAttribute True if attribute, False if uniform
+     */
+    function processLine(line, container, isAttribute) {
+        /**
+         * Get the associated WebGL type to be used for buffers later
+         * @param {string} type 
+         */
+        function getGLType(type) {
+            //TODO: add in more types
+            const glTypes = {
+                ivec: gl.SHORT,
+                uvec: gl.UNSIGNED_INT,
+                vec: gl.FLOAT,
+            };
+            return glTypes[type];
+        }
         let splitLine = line.split(' ');
         let name = splitLine[2].split(';')[0];
-        let type = splitLine[1];
-        //regex for getting numerics only
-        let length = Number.parseInt(type.match(/\d+/g)[0]);
-        container[name] = {type, length};
+        //TODO: make type line up with proper enum; e.g. gl.FLOAT for vec, gl.DOUBLE for dmat, dvec,... etc.
+        // regex for getting non-numeric portion
+        let dataType = splitLine[1].match(/\D/g).join('')
+        let type = getGLType(dataType);
+        // regex for getting numerics only
+        let size = Number.parseInt(splitLine[1].match(/\d+/g).join(''));
+        let location = isAttribute ? gl.getAttribLocation(program, name) : gl.getUniformLocation(program, name);
+        container[name] = {type, size, location};
     }
     let vertexRaw = gl.getShaderSource(vertexShaderProgram).split('\n').map(x => x.trimStart());
     let fragmentRaw = gl.getShaderSource(fragmentShaderProgram).split('\n').map(x => x.trimStart());
@@ -36,15 +66,16 @@ function extractProgramData(gl, program, vertexShaderProgram, fragmentShaderProg
 
     vertexRaw.forEach(line => {
         if (line.includes('uniform')) {
-            processLine(line, uniformData);
+            processLine(line, uniformData, false);
         }
         if (line.includes('attribute')) {
-            processLine(line, attributeData);
+            processLine(line, attributeData, true);
         }
     });
     fragmentRaw.forEach(line => {
         if (line.includes('uniform')) {
-            processLine(line, uniformData);
+            // I'm assuming the GLSL compiler checks to make sure that uniforms are named properly so there's no duplicates with different types
+            processLine(line, uniformData, false);
         }
     });
     return {program, attributeData, uniformData};
@@ -62,10 +93,9 @@ function createProgram(gl, vertexShader, fragmentShader) {
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
     gl.linkProgram(program);
-    console.log(extractProgramData(gl, program, vertexShader, fragmentShader));
     let success = gl.getProgramParameter(program, gl.LINK_STATUS);
     if (success) {
-        return program;
+        return extractProgramData(gl, program, vertexShader, fragmentShader);
     }
 
     console.log(gl.getProgramInfoLog(program));
