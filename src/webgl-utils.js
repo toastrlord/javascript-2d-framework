@@ -20,6 +20,36 @@ function createShader(gl, type, source) {
     gl.deleteShader(shader);
 }
 
+function extractProgramData(gl, program, vertexShaderProgram, fragmentShaderProgram) {
+    function processLine(line, container) {
+        let splitLine = line.split(' ');
+        let name = splitLine[2].split(';')[0];
+        let type = splitLine[1];
+        //TODO: only works for 'vec' types!!
+        let length = Number.parseInt(type.split('vec')[1]);
+        container[name] = {type, length};
+    }
+    let vertexRaw = gl.getShaderSource(vertexShaderProgram).split('\n').map(x => x.trimStart());
+    let fragmentRaw = gl.getShaderSource(fragmentShaderProgram).split('\n').map(x => x.trimStart());
+    let attributeData = {};
+    let uniformData = {};
+
+    vertexRaw.forEach(line => {
+        if (line.includes('uniform')) {
+            processLine(line, uniformData);
+        }
+        if (line.includes('attribute')) {
+            processLine(line, attributeData);
+        }
+    });
+    fragmentRaw.forEach(line => {
+        if (line.includes('uniform')) {
+            processLine(line, uniformData);
+        }
+    });
+    return {program, attributeData, uniformData};
+}
+
 /** 
  * Create a webGL program 
  * @param {WebGLRenderingContext} gl 
@@ -32,6 +62,7 @@ function createProgram(gl, vertexShader, fragmentShader) {
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
     gl.linkProgram(program);
+    console.log(extractProgramData(gl, program, vertexShader, fragmentShader));
     let success = gl.getProgramParameter(program, gl.LINK_STATUS);
     if (success) {
         return program;

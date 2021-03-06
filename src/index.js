@@ -1,5 +1,5 @@
 'use strict'
-import {draw, setContext, makeProgram, useProgram, clear} from './webgl-test'
+import {draw, setContext, makeProgram, useProgram, clear} from './webgl-test';
 
 const canvas = document.querySelector('#canvas');
 const width = canvas.width;

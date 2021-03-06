@@ -10,7 +10,6 @@ let currentProgram;
  * @param {HTMLCanvasElement} canvas 
  */
 function setContext(canvas) {
-    /**{WebGLRenderingContext} */
     gl = canvas.getContext('webgl');
     if (!gl) {
         alert('Error loading WebGL!');
@@ -60,6 +59,18 @@ function draw(positions, colors) {
         alert('WebGL context must be initialized before calling draw!');
     }
 
+    /* for every attribute:
+    *  -get the attribute location from the program (using a string)
+    *  -create the buffer
+    *  -bind the buffer
+    *  -call bufferdata with the input
+    *  -call vertexAttribPointer with the necessary information
+    */
+
+    /* for uniforms:
+    *  -get the uniform location
+    *  -set the uniform
+    */
     let positionAttributeLocation = gl.getAttribLocation(currentProgram, 'a_position');
     let positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -118,7 +129,6 @@ function draw(positions, colors) {
     offset = 0;
     let count = positions.length / size; // execute the vertex shader once for every pair of points provided
     gl.drawArrays(primitiveType, offset, count);
-
 }
 
 export {setContext, makeProgram, useProgram, draw, clear};
