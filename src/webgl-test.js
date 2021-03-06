@@ -54,7 +54,7 @@ function draw(positions) {
         alert('Error loading WebGL!');
     }
     // setup shaders
-    const vertexShaderSource = document.querySelector('#vertex-shader-2d').textContent;
+    const vertexShaderSource = document.querySelector('#pixel-vertex-shader-2d').textContent;
     const fragmentShaderSource = document.querySelector('#fragment-shader-2d').textContent;
 
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
@@ -63,6 +63,8 @@ function draw(positions) {
 
     let positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
     let positionBuffer = gl.createBuffer();
+
+    let resolutionUniformLocation = gl.getUniformLocation(program, 'u_resolution');
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
@@ -84,6 +86,9 @@ function draw(positions) {
 
     // Bind the position buffer
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+    // set the resolution uniform
+    gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
 
     // Tell the attribute how to get data out of positionBuffer
     let size = 2 // 2 components per iteration
