@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+    <script id='vertex-shader-2d' type='notjs'>
+        // attribute will receive data from a buffer
+        attribute vec4 a_position;
+
+        //all shaders have a main function
+        void main() {
+            // gl_Position is a special var for a vertex shaders
+            gl_Position = a_position;
+        }
+    </script>
+    <script id='fragment-shader-2d' type='notjs'>
+        // fragment shaders do not have a default precision
+        // so it needs to be set here
+        precision mediump float;
+
+        void main() {
+            // gl_FragColor is a special var for fragment shaders
+            gl_FragColor = vec4(1, 0, 0.5, 1); //reddish-purple color
+        }
+    </script>
+    <body>
+        <canvas id="canvas">
+            Canvas error!
+        </canvas>
+        <script src="main.js"></script>
+    </body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "js-framework",
+  "version": "1.0.0",
+  "description": "Framework for making 2d games in Javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@webpack-cli/init": "^1.1.3"
+  }
+}
