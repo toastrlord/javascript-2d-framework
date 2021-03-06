@@ -2,8 +2,26 @@ import './webgl-test'
 import draw from './webgl-test'
 let points = [
     0, 0,
-    0, 150,
+    150, 0,
+    150, 75,
+    150, 75,
+    300, 75,
+    300, 150,
+    150, 0,
     300, 0,
+    300, 75,
 ];
 
-draw(points);
+let triforce = [
+    0, 0,
+    150, 0,
+    75, 75,
+    150, 0,
+    225, 75,
+    300, 0,
+    75, 75,
+    225, 75,
+    150, 150,
+]
+
+draw(triforce);
