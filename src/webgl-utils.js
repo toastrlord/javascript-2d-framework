@@ -25,8 +25,8 @@ function extractProgramData(gl, program, vertexShaderProgram, fragmentShaderProg
         let splitLine = line.split(' ');
         let name = splitLine[2].split(';')[0];
         let type = splitLine[1];
-        //TODO: only works for 'vec' types!!
-        let length = Number.parseInt(type.split('vec')[1]);
+        //regex for getting numerics only
+        let length = Number.parseInt(type.match(/\d+/g)[0]);
         container[name] = {type, length};
     }
     let vertexRaw = gl.getShaderSource(vertexShaderProgram).split('\n').map(x => x.trimStart());
