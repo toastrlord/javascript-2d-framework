@@ -2,29 +2,73 @@
 
 import {createProgramFromScripts, resizeCanvasToDisplaySize} from './webgl-utils';
 
-function draw(positions, colors) {
-    /**{HTMLCanvasElement} */
-    const canvas = document.querySelector('#canvas');
-    const gl = canvas.getContext('webgl');
+let gl;
+let currentProgram;
+
+/** 
+ * Setup the WebGL render context
+ * @param {HTMLCanvasElement} canvas 
+ */
+function setContext(canvas) {
+    /**{WebGLRenderingContext} */
+    gl = canvas.getContext('webgl');
     if (!gl) {
         alert('Error loading WebGL!');
     }
+}
 
-    // setup shaders
-    const vertexShaderSource = document.querySelector('#pixel-vertex-shader-2d').textContent;
-    const fragmentShaderSource = document.querySelector('#color-fragment-shader-2d').textContent;
+/**
+ * Compile a webGL program using the given shader sources. Requires WebGL render context to be set
+ * @param {string} vertexSource 
+ * @param {string} shaderSource
+ * @returns {WebGLProgram} 
+ */
+function makeProgram(vertexSource, shaderSource) {
+    if (!gl) {
+        alert('WebGL context must be initialized before calling makeProgram!');
+    }
+    return createProgramFromScripts(gl, vertexSource, shaderSource);
+}
 
-    const program = createProgramFromScripts(gl, vertexShaderSource, fragmentShaderSource);
+/**
+ * Set this to be the current active program
+ * @param {WebGLProgram} program 
+ */
+function useProgram(program) {
+    currentProgram = program;
+    gl.useProgram(program); 
+}
 
-    let positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+/**
+ * Clears the current canvas
+ * @param {Number[]} color
+ */
+function clear(color) {
+    gl.clearColor(...color);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+}
+
+
+/**
+ * Draw the given vertices using the given colors. Fails if webGL is not initialized and a program is not loaded
+ * @param {*} positions 
+ * @param {*} colors 
+ */
+function draw(positions, colors) {
+    /**{HTMLCanvasElement} */
+    if (!gl) {
+        alert('WebGL context must be initialized before calling draw!');
+    }
+
+    let positionAttributeLocation = gl.getAttribLocation(currentProgram, 'a_position');
     let positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
-    let resolutionUniformLocation = gl.getUniformLocation(program, 'u_resolution');
+    let resolutionUniformLocation = gl.getUniformLocation(currentProgram, 'u_resolution');
 
     let colorBuffer = gl.createBuffer();
-    let colorAttributeLocation = gl.getAttribLocation(program, 'a_color');
+    let colorAttributeLocation = gl.getAttribLocation(currentProgram, 'a_color');
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
     
@@ -33,13 +77,6 @@ function draw(positions, colors) {
     // setup clip space to screen space relationship
     // map -1, +1 to 0, width, ... etc
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
-    // Clear the canvas
-    gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    // Use the program we made earlier
-    gl.useProgram(program);
 
     gl.enableVertexAttribArray(positionAttributeLocation);
 
@@ -84,4 +121,4 @@ function draw(positions, colors) {
 
 }
 
-export default draw;
+export {setContext, makeProgram, useProgram, draw, clear};

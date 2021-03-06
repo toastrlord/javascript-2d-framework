@@ -1,6 +1,9 @@
 'use strict'
-import draw from './webgl-test'
+import {draw, setContext, makeProgram, useProgram, clear} from './webgl-test'
 
+const canvas = document.querySelector('#canvas');
+const width = canvas.width;
+const height = canvas.height;
 let points = [
     0, 0,
     150, 0,
@@ -25,11 +28,18 @@ let triforce = [
     150, 150,
 ];
 
+let clearColor = [
+    0,
+    0,
+    0,
+    0
+]
+
 let yellow = [
     1,
     1,
     0,
-    1,
+    1
 ];
 
 function sameColor(positions, color) {
@@ -49,4 +59,38 @@ function randomColor(positions) {
     }
     return result;
 }
-draw(triforce, randomColor(triforce));
+
+function generateRandomTriangle() {
+    let result = [];
+    for (let i = 0; i < 3; i++) {
+        let x = Math.random() * width;
+        let y = Math.random() * height;
+        result.push(x, y);
+    }
+
+    return result;
+}
+
+function webGLSetup() {
+    setContext(canvas);
+    const basicProgram = makeProgram(document.querySelector('#pixel-vertex-shader-2d').textContent, document.querySelector('#color-fragment-shader-2d').textContent)
+    useProgram(basicProgram);
+}
+
+webGLSetup();
+let geometry = [];
+let color = [];
+
+window.setInterval(function(){
+    let newGeometry = generateRandomTriangle();
+    let newColor = randomColor(newGeometry);
+    geometry.push(...newGeometry);
+    color.push(...newColor);
+    draw(geometry, color);
+}, 500);
+
+window.setInterval(function(){
+    geometry = [];
+    color = [];
+    clear(clearColor);
+}, 10000);
