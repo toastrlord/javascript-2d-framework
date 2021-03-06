@@ -2,5 +2,5 @@ const path = require('path');
 
 module.exports = {
     mode: 'development',
-    entry: './src/webgl-test.js',
+    entry: './src/index.js',
 }

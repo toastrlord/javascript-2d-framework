@@ -1,5 +1,6 @@
 'use strict'
 
+//compile shader from source string
 function createShader(gl, type, source) {
     let shader = gl.createShader(type);
     gl.shaderSource(shader, source);
@@ -44,11 +45,10 @@ function resizeCanvasToDisplaySize(canvas) {
     }
    
     return needResize;
-  }
+}
 
-function main() {
+function draw(positions) {
     const canvas = document.querySelector('#canvas');
-    console.log(canvas);
     const gl = canvas.getContext('webgl');
     if (!gl) {
         alert('Error loading WebGL!');
@@ -56,7 +56,7 @@ function main() {
     // setup shaders
     const vertexShaderSource = document.querySelector('#vertex-shader-2d').textContent;
     const fragmentShaderSource = document.querySelector('#fragment-shader-2d').textContent;
-    console.log(vertexShaderSource);
+
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
     const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
     let program = createProgram(gl, vertexShader, fragmentShader);
@@ -66,16 +66,11 @@ function main() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-    // three 2d points, in clip space
-    let positions = [
-        0, 0,
-        1, 0,
-        1, 1,
-    ];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
     resizeCanvasToDisplaySize(gl.canvas);
 
     // setup clip space to screen space relationship
+    // map -1, +1 to 0, width, ... etc
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     // Clear the canvas
@@ -106,10 +101,10 @@ function main() {
     );
 
     let primitiveType = gl.TRIANGLES; // every 3 times the shader is run, a triangle will be drawn with the 3 points
-    //let offset = 0;
-    let count = 3; // execute the vertex shader 3 times
+    offset = 0;
+    let count = positions.length / size; // execute the vertex shader once for every pair of points provided
     gl.drawArrays(primitiveType, offset, count);
 
 }
 
-main();
+export default draw;
