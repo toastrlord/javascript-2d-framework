@@ -69,10 +69,10 @@ function main() {
     // three 2d points, in clip space
     let positions = [
         0, 0,
-        0.5, 0,
+        1, 0,
         1, 1,
     ];
-    gl.bufferData(gl.ARRAY_BUFER, new Float32Array(positions, gl.STATIC_DRAW));
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
     resizeCanvasToDisplaySize(gl.canvas);
 
     // setup clip space to screen space relationship
@@ -96,7 +96,7 @@ function main() {
     let normalize = false; // don't normalize the data
     let stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
     let offset = 0; // start at the beginning of the buffer
-    gl.verexAttribPointer(
+    gl.vertexAttribPointer(
         positionAttributeLocation,
         size,
         type,
