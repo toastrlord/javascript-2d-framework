@@ -48,6 +48,13 @@ function clear(color) {
 }
 
 function setupAttribBuffer(attribData, values, usage) {
+    /* for every attribute:
+    *  -get the attribute location from the program (using a string)
+    *  -create the buffer
+    *  -bind the buffer
+    *  -call bufferdata with the input
+    *  -call vertexAttribPointer with the necessary information
+    */
     let buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(values), usage);
@@ -56,6 +63,11 @@ function setupAttribBuffer(attribData, values, usage) {
 }
 
 function setupUniform(uniformData, values) {
+    /* for uniforms:
+    *  -get the uniform location
+    *  -set the uniform
+    *  (both are handled by the provided setter function in uniformData)
+    */
     uniformData.setter(values);
 }
 
@@ -63,18 +75,10 @@ function setupUniform(uniformData, values) {
  * Draw using the supplied values. Fails if webGL is not initialized and a program is not loaded, or if values do not match the attributes/uniforms
  */
 function draw(values) {
-    /**{HTMLCanvasElement} */
     if (!gl) {
         alert('WebGL context must be initialized before calling draw!');
     }
-
-    /* for every attribute:
-    *  -get the attribute location from the program (using a string)
-    *  -create the buffer
-    *  -bind the buffer
-    *  -call bufferdata with the input
-    *  -call vertexAttribPointer with the necessary information
-    */
+    
    // iterate over each attribute, and extract the data from values
    // presumes values has a field for each attribute name
     Object.keys(currentProgramData.attributeData).forEach(attributeName => {
@@ -86,10 +90,6 @@ function draw(values) {
         }
     });
 
-    /* for uniforms:
-    *  -get the uniform location
-    *  -set the uniform
-    */
     Object.keys(currentProgramData.uniformData).forEach(uniformName => {
         if (values[uniformName] === undefined) {
             console.log(`Values not provided for uniform: ${uniformName}`);

@@ -50,8 +50,13 @@ function extractProgramData(gl, program, vertexShaderProgram, fragmentShaderProg
         }
         function getUniformSetter() {
             //TODO: add in more function mappings
+            const createSetter = function(glFunc) {
+                return (values) => gl[glFunc](location, ...values);
+            }
             const setters = {
-                vec2: (values) => gl.uniform2f(location, ...values),
+                vec2: createSetter('uniform2f'),
+                vec3: createSetter('uniform3f'),
+                vec4: createSetter('uniform4f'),
             }
             return setters[fullDataType];
         }
