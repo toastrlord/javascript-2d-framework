@@ -86,7 +86,7 @@ window.setInterval(function(){
     let newColor = randomColor(newGeometry);
     geometry.push(...newGeometry);
     color.push(...newColor);
-    draw({a_position: geometry, a_color: color});
+    draw({a_position: geometry, a_color: color, u_resolution: [width, height]});
 }, 500);
 
 window.setInterval(function(){

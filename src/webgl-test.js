@@ -55,6 +55,10 @@ function setupAttribBuffer(attribData, values, usage) {
     gl.vertexAttribPointer(attribData.location, attribData.size, attribData.type, false, 0 , 0);
 }
 
+function setupUniform(uniformData, values) {
+    uniformData.setter(values);
+}
+
 /**
  * Draw using the supplied values. Fails if webGL is not initialized and a program is not loaded, or if values do not match the attributes/uniforms
  */
@@ -74,25 +78,32 @@ function draw(values) {
    // iterate over each attribute, and extract the data from values
    // presumes values has a field for each attribute name
     Object.keys(currentProgramData.attributeData).forEach(attributeName => {
-        setupAttribBuffer(currentProgramData.attributeData[attributeName], values[attributeName], gl.STATIC_DRAW);
+        if (values[attributeName] === undefined) {
+            console.log(`Values not provided for attribute: ${attributeName}`);
+        }
+        else {
+            setupAttribBuffer(currentProgramData.attributeData[attributeName], values[attributeName], gl.STATIC_DRAW);
+        }
     });
 
     /* for uniforms:
     *  -get the uniform location
     *  -set the uniform
     */
-    
-
-    let resolutionUniformLocation = gl.getUniformLocation(currentProgramData.program, 'u_resolution');
+    Object.keys(currentProgramData.uniformData).forEach(uniformName => {
+        if (values[uniformName] === undefined) {
+            console.log(`Values not provided for uniform: ${uniformName}`);
+        }
+        else {
+            setupUniform(currentProgramData.uniformData[uniformName], values[uniformName]);
+        }
+    });
     
     resizeCanvasToDisplaySize(gl.canvas);
 
     // setup clip space to screen space relationship
     // map -1, +1 to 0, width, ... etc
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
-    // set the resolution uniform
-    gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
 
     /*
     // Tell the attribute how to get data out of positionBuffer

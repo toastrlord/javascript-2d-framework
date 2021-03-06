@@ -48,16 +48,30 @@ function extractProgramData(gl, program, vertexShaderProgram, fragmentShaderProg
             };
             return glTypes[type];
         }
+        function getUniformSetter() {
+            //TODO: add in more function mappings
+            const setters = {
+                vec2: (values) => gl.uniform2f(location, ...values),
+            }
+            return setters[fullDataType];
+        }
         let splitLine = line.split(' ');
         let name = splitLine[2].split(';')[0];
         //TODO: make type line up with proper enum; e.g. gl.FLOAT for vec, gl.DOUBLE for dmat, dvec,... etc.
+        let fullDataType = splitLine[1];
         // regex for getting non-numeric portion
-        let dataType = splitLine[1].match(/\D/g).join('')
+        let dataType = fullDataType.match(/\D/g).join('')
         let type = getGLType(dataType);
         // regex for getting numerics only
-        let size = Number.parseInt(splitLine[1].match(/\d+/g).join(''));
+        let size = Number.parseInt(fullDataType.match(/\d+/g).join(''));
         let location = isAttribute ? gl.getAttribLocation(program, name) : gl.getUniformLocation(program, name);
-        container[name] = {type, size, location};
+        if (isAttribute) {
+            container[name] = {type, size, location};
+        }
+        else {
+            container[name] = {type, size, location, setter: getUniformSetter()}
+        }
+        
     }
     let vertexRaw = gl.getShaderSource(vertexShaderProgram).split('\n').map(x => x.trimStart());
     let fragmentRaw = gl.getShaderSource(fragmentShaderProgram).split('\n').map(x => x.trimStart());
