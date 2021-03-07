@@ -49,6 +49,24 @@ function sameColor(positions, color) {
     }
     return result;
 }
+
+/**
+ * 
+ * @param {number} x 
+ * @param {number} y 
+ * @param {number} width 
+ * @param {number} height 
+ */
+function generateRectangle(x, y, width, height) {
+    return [
+        x, y,
+        x + width, y,
+        x, y + height,
+        x + width, y + height,
+        x + width, y,
+        x, y + height,
+    ]
+}
 function randomColor(positions) {
     let result = [];
     for (let i = 0; i < positions.length; i += 2) {
@@ -80,7 +98,10 @@ function webGLSetup() {
 webGLSetup();
 let geometry = [];
 let color = [];
-
+let rectangle = generateRectangle(0, 0, 50, 100);
+let rectColors = randomColor(rectangle);
+draw({a_position: rectangle, a_color: rectColors, u_resolution: [width, height]});
+/*
 window.setInterval(function(){
     let newGeometry = generateRandomTriangle();
     let newColor = randomColor(newGeometry);
@@ -93,4 +114,4 @@ window.setInterval(function(){
     geometry = [];
     color = [];
     clear(clearColor);
-}, 10000);
+}, 10000);*/

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
 <html>
-    <script id='clipspace-vertex-shader-2d' type='notjs'>
+    <script id='clipspace-vertex-shader-2d' type='glsl'>
         // simple vertex shader, expecting positions to be in clipspace
         // attribute will receive data from a buffer
         attribute vec4 a_position;
@@ -12,7 +12,7 @@
             gl_Position = a_position;
         }
     </script>
-    <script id='pixel-vertex-shader-2d' type='notjs'>
+    <script id='pixel-vertex-shader-2d' type='glsl'>
         // vertex shader that expects positions in pixel-vertex-shader-2d, uses bottom-left origin
         attribute vec2 a_position;
         attribute vec4 a_color;
@@ -35,7 +35,33 @@
             v_color = a_color;
         }
     </script>
-    <script id='static-color-fragment-shader-2d' type='notjs'>
+    <script id='image-vertex-shader-2d' type='glsl'>
+        // vertex shader that takes a unit square, and scales it via matrix math
+        // (faster than uploading sevaral vertices to the GPU)
+        attribute vec4 a_position;
+        attribute vec2 a_texcoord;
+
+        uniform mat4 u_matrix;
+
+        varying vec2 v_texcoord;
+
+        void main() {
+            gl_Position = u_matrix * a_position;
+            v_texcoord = a_texcoord;
+        }
+    </script>
+    <script id='image-fragment-shader-2d' type='glsl'>
+        precision mediump float;
+
+        varying vec2 v_texcoord;
+
+        uniform sampler2D u_texture;
+
+        void main() {
+            gl_FragColor = texture2D(u_texture, v_texcoord);
+        }
+    </script>
+    <script id='static-color-fragment-shader-2d' type='glsl'>
         // fragment shaders do not have a default precision
         // so it needs to be set here
         precision mediump float;
@@ -45,7 +71,7 @@
             gl_FragColor = vec4(1, 0, 0.5, 1); //reddish-purple color
         }
     </script>
-    <script id='uniform-color-fragment-shader-2d' type='notjs'>
+    <script id='uniform-color-fragment-shader-2d' type='glsl'>
         precision mediump float;
 
         uniform vec4 u_color;
@@ -54,7 +80,7 @@
             gl_FragColor = u_color;
         }
     </script>
-    <script id='color-fragment-shader-2d' type='notjs'>
+    <script id='color-fragment-shader-2d' type='glsl'>
         precision mediump float;
 
         varying vec4 v_color;

@@ -48,7 +48,7 @@ function extractProgramData(gl, program, vertexShaderProgram, fragmentShaderProg
             };
             return glTypes[type];
         }
-        function getUniformSetter() {
+        function getUniformSetter(fullDataType) {
             //TODO: add in more function mappings
             const createSetter = function(glFunc) {
                 return (values) => gl[glFunc](location, ...values);
@@ -74,7 +74,7 @@ function extractProgramData(gl, program, vertexShaderProgram, fragmentShaderProg
             container[name] = {type, size, location};
         }
         else {
-            container[name] = {type, size, location, setter: getUniformSetter()}
+            container[name] = {type, size, location, setter: getUniformSetter(fullDataType)}
         }
         
     }
