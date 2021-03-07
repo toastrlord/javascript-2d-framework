@@ -116,13 +116,13 @@ function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHei
     setupAttribBuffer(imageProgramData.attributeData['a_texcoord'], texcoords, gl.DYNAMIC_DRAW);
 
     // matrix will convert from pixels to clipspace
-    let matrix = m4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
+    let matrix = matrix4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
 
     // this matrix will translate the quad to dstX, dstY
-    matrix = m4.translate(matrix, dstX, dstY, 0);
+    matrix = matrix4.translate(matrix, dstX, dstY, 0);
 
     // this matrix scales our unit quad up to texWidth, texHeight
-    matrix = m4.scale(matrix, texWidth, texHeight, 1);
+    matrix = matrix4.scale(matrix, texWidth, texHeight, 1);
 
     let matrixLocation = imageProgramData.uniformData['u_matrix'].location;
     // set the matrix uniform
