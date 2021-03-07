@@ -1,7 +1,9 @@
+'use strict'
+
 const matrix4 = {
     orthographic,
     translate,
-
+    scale,
 };
 
 function matrix2Identity() {
@@ -38,7 +40,7 @@ function orthographic(left, right, bottom, top, near, far) {
     matrix[0] = 2/(right-left);
     matrix[3] = -(right+left)/(right-left);
     matrix[5] = 2/(top+bottom);
-    matrix[7] = -(top+bottom)/(top-bottm);
+    matrix[7] = -(top+bottom)/(top-bottom);
     matrix[10] = -2/(far-near);
     matrix[11] = -(far+near)/(far-near);
     matrix[15] = 1;
@@ -82,6 +84,7 @@ function multiply(matrix1, matrix2) {
         0, 0, 0, 0,
         0, 0, 0, 0,
     ];
+    //TODO: make this more succinct in a for loop?
     newMatrix[0] = dotProduct(0, 0);
     newMatrix[1] = dotProduct(0, 1);
     newMatrix[2] = dotProduct(0, 2);
@@ -104,5 +107,7 @@ function multiply(matrix1, matrix2) {
     
     return newMatrix;
 }
+
+console.log(multiply(matrix4Identity(), matrix4Identity()));
 
 export default matrix4;

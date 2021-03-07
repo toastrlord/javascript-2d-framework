@@ -13,6 +13,7 @@
     "webpack-cli": "^4.5.0"
   },
   "dependencies": {
+    "live-server": "^1.2.1",
     "webpack": "^5.24.3"
   }
 }

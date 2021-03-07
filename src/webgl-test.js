@@ -1,6 +1,8 @@
 'use strict'
 
 import {createProgramFromScripts, resizeCanvasToDisplaySize} from './webgl-utils';
+import matrix4 from './matrix-util';
+
 /** @type {WebGLRenderingContext} */
 let gl;
 let currentProgramData;
@@ -74,9 +76,9 @@ function setupUniform(uniformData, values) {
 /**
  *  creates texture info { width w: height: h texture: tex}
  *  texture starts with 1x1 pixels and updates when it is loaded
- * @param {*} url 
+ * @param {*} path Location of the image
  */
-function loadImageAndCreateTextureInfo(url) {
+function loadImageAndCreateTextureInfo(path) {
     let tex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, tex);
     // fill text with 1x1 blue pixel
@@ -100,8 +102,10 @@ function loadImageAndCreateTextureInfo(url) {
         
         gl.bindTexture(gl.TEXTURE_2D, textureInfo.texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+        console.log(textureInfo);
     });
-    img.src = url;
+    
+    img.src = path;
 
     return textureInfo;
 }
@@ -112,17 +116,22 @@ function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHei
     //TODO: load in our shader program, or just remove the arg and set useProgramData from index.js
     useProgramData(imageProgramData);
 
+    imageProgramData.attributeData['a_position'].size = 2; //override size here, GLSL is a vec4, but we will only be providing x and y, so let it fill in default vals
+
     setupAttribBuffer(imageProgramData.attributeData['a_position'], positions, gl.DYNAMIC_DRAW);
     setupAttribBuffer(imageProgramData.attributeData['a_texcoord'], texcoords, gl.DYNAMIC_DRAW);
 
     // matrix will convert from pixels to clipspace
-    let matrix = matrix4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
+    let matrix = matrix4.orthographic(0, gl.canvas.width, 0, gl.canvas.height, -1, 1);
+    console.log(`Orthographic matrix: ${matrix}`);
 
     // this matrix will translate the quad to dstX, dstY
     matrix = matrix4.translate(matrix, dstX, dstY, 0);
+    console.log(`Translated matrix by x=${dstX}, y=${dstY}, result=${matrix}`);
 
     // this matrix scales our unit quad up to texWidth, texHeight
     matrix = matrix4.scale(matrix, texWidth, texHeight, 1);
+    console.log(`Scaled matrix by x=${texWidth}, y=${texHeight}, result=${matrix}`);
 
     let matrixLocation = imageProgramData.uniformData['u_matrix'].location;
     // set the matrix uniform
@@ -130,7 +139,7 @@ function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHei
 
     let textureLocation = imageProgramData.uniformData['u_texture'].location;
     // tell shader to get textrue from texture unit 0
-    gl.uniformli(textureLocation, 0);
+    gl.uniform1i(textureLocation, 0);
 
     // draw the quad (2 triangles, so 6 vertices)
     gl.drawArrays(gl.TRIANGLES, 0 ,6);
