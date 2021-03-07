@@ -123,15 +123,12 @@ function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHei
 
     // matrix will convert from pixels to clipspace
     let matrix = matrix4.orthographic(0, gl.canvas.width, 0, gl.canvas.height, -1, 1);
-    console.log(`Orthographic matrix: ${matrix}`);
 
     // this matrix will translate the quad to dstX, dstY
     matrix = matrix4.translate(matrix, dstX, dstY, 0);
-    console.log(`Translated matrix by x=${dstX}, y=${dstY}, result=${matrix}`);
 
     // this matrix scales our unit quad up to texWidth, texHeight
     matrix = matrix4.scale(matrix, texWidth, texHeight, 1);
-    console.log(`Scaled matrix by x=${texWidth}, y=${texHeight}, result=${matrix}`);
 
     let matrixLocation = imageProgramData.uniformData['u_matrix'].location;
     // set the matrix uniform

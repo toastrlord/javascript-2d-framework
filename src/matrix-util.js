@@ -39,7 +39,7 @@ function orthographic(left, right, bottom, top, near, far) {
     ];
     matrix[0] = 2/(right-left);
     matrix[3] = -(right+left)/(right-left);
-    matrix[5] = 2/(top+bottom);
+    matrix[5] = 2/(top-bottom);
     matrix[7] = -(top+bottom)/(top-bottom);
     matrix[10] = -2/(far-near);
     matrix[11] = -(far+near)/(far-near);
@@ -107,7 +107,5 @@ function multiply(matrix1, matrix2) {
     
     return newMatrix;
 }
-
-console.log(multiply(matrix4Identity(), matrix4Identity()));
 
 export default matrix4;

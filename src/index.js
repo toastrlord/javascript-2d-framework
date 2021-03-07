@@ -99,7 +99,7 @@ function webGLSetup() {
     const imageProgramData = makeProgram(imageVertexSource, imageFragmentSource);
     let imgData = generateImageData();
     window.setInterval(() => {
-        drawImage(imageProgramData, imgData.positions, imgData.texCoords, imgData.textureInfo.texture, imgData.textureInfo.width, imgData.textureInfo.height, 50, 80);
+        drawImage(imageProgramData, imgData.positions, imgData.texCoords, imgData.textureInfo.texture, imgData.textureInfo.width, imgData.textureInfo.height, 150, 80);
     }, 1000);
 }
 
