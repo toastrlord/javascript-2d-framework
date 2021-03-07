@@ -72,6 +72,72 @@ function setupUniform(uniformData, values) {
 }
 
 /**
+ *  creates texture info { width w: height: h texture: tex}
+ *  texture starts with 1x1 pixels and updates when it is loaded
+ * @param {*} url 
+ */
+function loadImageAndCreateTextureInfo(url) {
+    let tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    // fill text with 1x1 blue pixel
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+        new Uint8Array([0, 0, 255, 255]));
+
+    // assume texture is not a power of 2
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+    let textureInfo = {
+        width: 1, // size is unknown until load is done
+        height: 1,
+        texture: tex,
+    };
+    let img = new Image();
+    img.addEventListener('load', function() {
+        textureInfo.width = img.width;
+        textureInfo.height = img.height;
+        
+        gl.bindTexture(gl.TEXTURE_2D, textureInfo.texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+    });
+    img.src = url;
+
+    return textureInfo;
+}
+
+function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHeight, dstX, dstY) {
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+
+    //TODO: load in our shader program, or just remove the arg and set useProgramData from index.js
+    useProgramData(imageProgramData);
+
+    setupAttribBuffer(imageProgramData.attributeData['a_position'], positions, gl.DYNAMIC_DRAW);
+    setupAttribBuffer(imageProgramData.attributeData['a_texcoord'], texcoords, gl.DYNAMIC_DRAW);
+
+    // matrix will convert from pixels to clipspace
+    let matrix = m4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
+
+    // this matrix will translate the quad to dstX, dstY
+    matrix = m4.translate(matrix, dstX, dstY, 0);
+
+    // this matrix scales our unit quad up to texWidth, texHeight
+    matrix = m4.scale(matrix, texWidth, texHeight, 1);
+
+    let matrixLocation = imageProgramData.uniformData['u_matrix'].location;
+    // set the matrix uniform
+    gl.uniformMatrix4fv(matrixLocation, false, matrix);
+
+    let textureLocation = imageProgramData.uniformData['u_texture'].location;
+    // tell shader to get textrue from texture unit 0
+    gl.uniformli(textureLocation, 0);
+
+    // draw the quad (2 triangles, so 6 vertices)
+    gl.drawArrays(gl.TRIANGLES, 0 ,6);
+
+}
+
+/**
  * Draw using the supplied values. Fails if webGL is not initialized and a program is not loaded, or if values do not match the attributes/uniforms
  */
 function draw(values) {
@@ -127,4 +193,4 @@ function draw(values) {
     gl.drawArrays(primitiveType, offset, count);
 }
 
-export {setContext, makeProgram, useProgramData, draw, clear};
+export {loadImageAndCreateTextureInfo, drawImage, setContext, makeProgram, useProgramData, draw, clear};

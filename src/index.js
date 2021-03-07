@@ -1,5 +1,5 @@
 'use strict'
-import {draw, setContext, makeProgram, useProgramData, clear} from './webgl-test';
+import {loadImageAndCreateTextureInfo, draw, drawImage, setContext, makeProgram, useProgramData, clear} from './webgl-test';
 
 const canvas = document.querySelector('#canvas');
 const width = canvas.width;
@@ -93,14 +93,46 @@ function webGLSetup() {
     setContext(canvas);
     const basicProgramData = makeProgram(document.querySelector('#pixel-vertex-shader-2d').textContent, document.querySelector('#color-fragment-shader-2d').textContent)
     useProgramData(basicProgramData);
+
+    const imageVertexSource = document.querySelector('#image-vertex-shader-2d').textContent;
+    const imageFragmentSource = document.querySelector('#image-fragment-shader-2d').textContent;
+    const imageProgramData = makeProgram(imageVertexSource, imageFragmentSource);
+    console.log(imageProgramData);
+    let imgData = generateImageData();
+    drawImage(imageProgramData, imgData.positions, imgData.texCoords, imgData.textureInfo.texture, imgData.textureInfo.width, imgData.textureInfo.height)
+}
+
+function generateImageData() {
+    // unit quad
+    let positions = [
+        0, 0,
+        1, 0,
+        0, 1,
+        1, 1,
+        0, 1,
+        1, 0,
+    ];
+    // also a unit quad
+    let texCoords = [
+        0, 0,
+        1, 0,
+        0, 1,
+        1, 1,
+        0, 1,
+        1, 0,
+    ];
+    let textureInfo = loadImageAndCreateTextureInfo('https://webglfundamentals.org/webgl/resources/star.jpg');
+    return {positions, texCoords, textureInfo};
 }
 
 webGLSetup();
+/*
 let geometry = [];
 let color = [];
 let rectangle = generateRectangle(0, 0, 50, 100);
 let rectColors = randomColor(rectangle);
 draw({a_position: rectangle, a_color: rectColors, u_resolution: [width, height]});
+*/
 /*
 window.setInterval(function(){
     let newGeometry = generateRandomTriangle();
