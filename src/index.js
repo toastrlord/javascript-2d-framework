@@ -1,5 +1,6 @@
 'use strict'
 import {loadImageAndCreateTextureInfo, draw, drawImage, setContext, makeProgram, useProgramData, clear} from './webgl-test';
+import matrix4 from './matrix-util';
 
 const canvas = document.querySelector('#canvas');
 const width = canvas.width;
@@ -98,20 +99,21 @@ function webGLSetup() {
     const imageFragmentSource = document.querySelector('#image-fragment-shader-2d').textContent;
     const imageProgramData = makeProgram(imageVertexSource, imageFragmentSource);
     let imgData = generateImageData();
+    console.log(imageProgramData);
     window.setInterval(() => {
-        drawImage(imageProgramData, imgData.positions, imgData.texCoords, imgData.textureInfo.texture, imgData.textureInfo.width, imgData.textureInfo.height, 150, 80);
+        drawImage(imageProgramData, imgData.positions, imgData.texCoords, imgData.textureInfo.texture, imgData.textureInfo.width, imgData.textureInfo.height, 0, 0);
     }, 1000);
 }
 
 function generateImageData() {
     // unit quad
     let positions = [
-        0, 0,
-        0, 1,
-        1, 0,
-        1, 0,
-        0, 1,
-        1, 1,
+        0, 0, 0,
+        0, 1, 0,
+        1, 0, 0,
+        1, 0, 0,
+        0, 1, 0,
+        1, 1, 0,
     ];
     // also a unit quad
     let texCoords = [

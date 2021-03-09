@@ -1,7 +1,7 @@
 'use strict'
 
-import {createProgramFromScripts, resizeCanvasToDisplaySize} from './webgl-utils';
-import matrix4 from './matrix-util';
+import { createProgramFromScripts, resizeCanvasToDisplaySize } from './webgl-utils';
+import { matrix4, matrix3 } from './matrix-util';
 
 /** @type {WebGLRenderingContext} */
 let gl;
@@ -116,30 +116,35 @@ function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHei
     //TODO: load in our shader program, or just remove the arg and set useProgramData from index.js
     useProgramData(imageProgramData);
 
-    imageProgramData.attributeData['a_position'].size = 2; //override size here, GLSL is a vec4, but we will only be providing x and y, so let it fill in default vals
+    //imageProgramData.attributeData['a_position'].size = 2; //override size here, GLSL is a vec4, but we will only be providing x and y, so let it fill in default vals
 
     setupAttribBuffer(imageProgramData.attributeData['a_position'], positions, gl.DYNAMIC_DRAW);
     setupAttribBuffer(imageProgramData.attributeData['a_texcoord'], texcoords, gl.DYNAMIC_DRAW);
 
+    setupUniform(imageProgramData.uniformData['u_resolution'], [canvas.width, canvas.height]);
+
     // matrix will convert from pixels to clipspace
-    let matrix = matrix4.orthographic(0, gl.canvas.width, 0, gl.canvas.height, -1, 1);
+    let matrix = matrix3.identity();
+
 
     // this matrix will translate the quad to dstX, dstY
-    matrix = matrix4.translate(matrix, dstX, dstY, 0);
+    matrix = matrix3.translate(matrix, dstX, dstY);
+
+    // rotation transform would go here
 
     // this matrix scales our unit quad up to texWidth, texHeight
-    matrix = matrix4.scale(matrix, texWidth, texHeight, 1);
+    matrix = matrix3.scale(matrix, texWidth, texHeight, 1);
 
     let matrixLocation = imageProgramData.uniformData['u_matrix'].location;
     // set the matrix uniform
-    gl.uniformMatrix4fv(matrixLocation, false, matrix);
+    gl.uniformMatrix3fv(matrixLocation, false, matrix);
 
     let textureLocation = imageProgramData.uniformData['u_texture'].location;
     // tell shader to get textrue from texture unit 0
     gl.uniform1i(textureLocation, 0);
 
     // draw the quad (2 triangles, so 6 vertices)
-    gl.drawArrays(gl.TRIANGLES, 0 ,6);
+    gl.drawArrays(gl.TRIANGLES, 0 , 6);
 
 }
 
