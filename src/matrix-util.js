@@ -174,17 +174,17 @@ const matrix3 = {
                 0, 0, 0,
                 0, 0, 0,
             ];
-            newMatrix[M00] = dotProduct(0, 0);
-            newMatrix[M01] = dotProduct(0, 1);
-            newMatrix[M02] = dotProduct(0, 2);
+            newMatrix[0] = dotProduct(0, 0);
+            newMatrix[1] = dotProduct(0, 1);
+            newMatrix[2] = dotProduct(0, 2);
 
-            newMatrix[M10] = dotProduct(1, 0);
-            newMatrix[M11] = dotProduct(1, 1);
-            newMatrix[M12] = dotProduct(1, 2);
+            newMatrix[3] = dotProduct(1, 0);
+            newMatrix[4] = dotProduct(1, 1);
+            newMatrix[5] = dotProduct(1, 2);
 
-            newMatrix[M20] = dotProduct(2, 0);
-            newMatrix[M21] = dotProduct(2, 1);
-            newMatrix[M22] = dotProduct(2, 2);
+            newMatrix[6] = dotProduct(2, 0);
+            newMatrix[7] = dotProduct(2, 1);
+            newMatrix[8] = dotProduct(2, 2);
 
             return newMatrix;
         } else if (matrix2.length === 3) {

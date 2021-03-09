@@ -128,19 +128,19 @@ function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHei
 
 
     // this matrix will translate the quad to dstX, dstY
-    matrix = matrix3.translate(matrix, dstX, dstY);
+    //matrix = matrix3.translate(matrix, dstX, dstY);
 
     // rotation transform would go here
 
     // this matrix scales our unit quad up to texWidth, texHeight
-    matrix = matrix3.scale(matrix, texWidth, texHeight, 1);
+    matrix = matrix3.scale(matrix, texWidth, texHeight);
 
     let matrixLocation = imageProgramData.uniformData['u_matrix'].location;
     // set the matrix uniform
     gl.uniformMatrix3fv(matrixLocation, false, matrix);
 
     let textureLocation = imageProgramData.uniformData['u_texture'].location;
-    // tell shader to get textrue from texture unit 0
+    // tell shader to get texture from texture unit 0
     gl.uniform1i(textureLocation, 0);
 
     // draw the quad (2 triangles, so 6 vertices)
