@@ -218,8 +218,8 @@ const matrix3 = {
         return matrix3.multiply(matrix, translationMatrix);
     },
     rotate: function(matrix, angleInRadians) {
-        const cos = Math.cos(angle);
-        const sin = Math.cos(angle);
+        const cos = Math.cos(angleInRadians);
+        const sin = Math.sin(angleInRadians);
         let rotationMatrix = [
             cos, -sin, 0,
             sin, cos, 0,

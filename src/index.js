@@ -99,9 +99,24 @@ function webGLSetup() {
     const imageFragmentSource = document.querySelector('#image-fragment-shader-2d').textContent;
     const imageProgramData = makeProgram(imageVertexSource, imageFragmentSource);
     let imgData = generateImageData();
+    let x = 0;
+    let y = 0;
+    let speed = 2;
+    let angle = Math.random() * Math.PI * 2;
+    let xVelocity = Math.cos(angle) * speed;
+    let yVelocity = Math.sin(angle) * speed;
     window.setInterval(() => {
-        drawImage(imageProgramData, imgData.positions, imgData.texCoords, imgData.textureInfo.texture, imgData.textureInfo.width, imgData.textureInfo.height, 0, 0);
-    }, 1000);
+        x += xVelocity;
+        y += yVelocity;
+        if (x + 64 > width || x < 0) {
+            xVelocity = - xVelocity;
+        }
+        if (y + 64 > height || y < 0) {
+            yVelocity = -yVelocity;
+        }
+        //angle += 1e-2;
+        drawImage(imageProgramData, imgData.positions, imgData.texCoords, imgData.textureInfo.texture, imgData.textureInfo.width, imgData.textureInfo.height, Math.floor(x), Math.floor(y), 0);
+    }, 20);
 }
 
 function generateImageData() {

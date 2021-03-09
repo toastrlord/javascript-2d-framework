@@ -110,7 +110,7 @@ function loadImageAndCreateTextureInfo(path) {
     return textureInfo;
 }
 
-function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHeight, dstX, dstY) {
+function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHeight, dstX, dstY, angle) {
     gl.bindTexture(gl.TEXTURE_2D, tex);
 
     //TODO: load in our shader program, or just remove the arg and set useProgramData from index.js
@@ -126,14 +126,14 @@ function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHei
     // matrix will convert from pixels to clipspace
     let matrix = matrix3.identity();
 
-
-    // this matrix will translate the quad to dstX, dstY
-    //matrix = matrix3.translate(matrix, dstX, dstY);
-
-    // rotation transform would go here
-
     // this matrix scales our unit quad up to texWidth, texHeight
     matrix = matrix3.scale(matrix, texWidth, texHeight);
+
+    // rotation transform would go here
+    matrix = matrix3.rotate(matrix, angle);
+
+    // this matrix will translate the quad to dstX, dstY
+    matrix = matrix3.translate(matrix, dstX, dstY);
 
     let matrixLocation = imageProgramData.uniformData['u_matrix'].location;
     // set the matrix uniform
