@@ -25,10 +25,55 @@ function generateRectangle(x, y, width, height) {
     ]
 }
 
+function changeColor(square) {
+    square.color = [Math.random(), Math.random(), Math.random(), 1];
+}
+
+function createSquare(x, y, dimension, speed, color) {
+    let angle = Math.random() * Math.PI * 2;
+    let xVelocity = speed * Math.cos(angle);
+    let yVelocity = speed * Math.sin(angle);
+    let square = {x, y, xVelocity, yVelocity, color, dimension,
+    update: function() {
+        if (square.x < 0) {
+            changeColor(square);
+            square.x = 0;
+            square.xVelocity = -square.xVelocity;
+        }
+        if (square.x + square.dimension > width) {
+            changeColor(square);
+            square.x = width - square.dimension;
+            square.xVelocity = -square.xVelocity;
+        }
+        if (square.y < 0) {
+            changeColor(square);
+            square.y = 0;
+            square.yVelocity = -square.yVelocity;
+        }
+        if (square.y + square.dimension > height) {
+            changeColor(square);
+            square.y = height - square.dimension;
+            square.yVelocity = -square.yVelocity;
+        }
+        square.x += square.xVelocity;
+        square.y += square.yVelocity;
+        drawRectangle(square.x, square.y, square.x + dimension, square.y + dimension, square.color);
+    }};
+    return square;
+}
+
 function webGLSetup() {
     setContext(canvas);
-    drawRectangle(30, 0, 60, 120, [1, 0, 0, 1]);
-    drawPrimitives();
+    let squares = [];
+    for (let i = 0; i < 6; i += 1) {
+        squares.push(createSquare(Math.random() * (width - 50), Math.random() * (height - 50), 50, 6, [Math.random(), Math.random(), Math.random(), 1]));
+    }
+    window.setInterval(() => {
+        squares.forEach(square => {
+            square.update();
+        });
+        drawPrimitives();
+    }, 50);
 }
 
 function generateImageData() {

@@ -221,7 +221,6 @@ function addPrimitiveDrawingData(points, colors) {
  */
 function drawPrimitives() {
     primitiveDrawingData.u_resolution = [gl.canvas.width, gl.canvas.height];
-    console.log(primitiveDrawingData);
     useProgramData(primitiveProgramData);
     setupShaderVars(primitiveDrawingData);
     
@@ -234,8 +233,10 @@ function drawPrimitives() {
     let primitiveType = gl.TRIANGLES; // every 3 times the shader is run, a triangle will be drawn with the 3 points
     let offset = 0;
     let count = primitiveDrawingData.a_position.length / 2; // execute the vertex shader once for every pair of points provided
-    console.log(primitiveDrawingData);
     gl.drawArrays(primitiveType, offset, count);
+    Object.keys(primitiveDrawingData).forEach(key => {
+        primitiveDrawingData[key] = [];
+    })
 }
 
 export {loadImageAndCreateTextureInfo, drawImages, setContext, makeProgram, useProgramData, drawPrimitives, clear, addPrimitiveDrawingData};
