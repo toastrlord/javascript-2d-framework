@@ -212,8 +212,8 @@ function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHei
 }
 
 function addPrimitiveDrawingData(points, colors) {
-    primitiveDrawingData.a_position.push(points);
-    primitiveDrawingData.a_color.push(colors);
+    primitiveDrawingData.a_position.push(...points);
+    primitiveDrawingData.a_color.push(...colors);
 }
 
 /**
@@ -233,7 +233,8 @@ function drawPrimitives() {
 
     let primitiveType = gl.TRIANGLES; // every 3 times the shader is run, a triangle will be drawn with the 3 points
     let offset = 0;
-    let count = primitiveDrawingData['a_position'].length / 2; // execute the vertex shader once for every pair of points provided
+    let count = primitiveDrawingData.a_position.length / 2; // execute the vertex shader once for every pair of points provided
+    console.log(primitiveDrawingData);
     gl.drawArrays(primitiveType, offset, count);
 }
 

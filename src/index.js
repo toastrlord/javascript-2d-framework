@@ -27,7 +27,7 @@ function generateRectangle(x, y, width, height) {
 
 function webGLSetup() {
     setContext(canvas);
-    drawRectangle(0, 0, 120, 120, [1, 0, 0, 1]);
+    drawRectangle(30, 0, 60, 120, [1, 0, 0, 1]);
     drawPrimitives();
 }
 

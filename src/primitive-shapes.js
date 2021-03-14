@@ -27,7 +27,7 @@ function drawRectangle(leftX, bottomY, rightX, topY, color) {
 }  
 
 function drawTriangle(points, color) {
-    addPrimitiveDrawingData(points, applycolor(points, color));
+    addPrimitiveDrawingData(points, applyColor(points, color));
 }
 
 function drawCircle(centerX, centerY, radius, divisions, color) {
