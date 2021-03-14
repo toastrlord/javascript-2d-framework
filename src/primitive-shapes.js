@@ -36,7 +36,7 @@ function drawCircle(centerX, centerY, radius, divisions, color) {
     let center = [centerX, centerY];
     let prevX = centerX;
     let prevY = centerY + radius;
-    for (let i = 0; i < divisions; i++) {
+    for (let i = 0; i <= divisions; i++) {
         points.push(...center);
         points.push(...[prevX, prevY]);
         prevX = centerX + radius * Math.cos(dTheta * (i + 1));

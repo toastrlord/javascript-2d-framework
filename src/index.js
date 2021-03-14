@@ -64,16 +64,8 @@ function createSquare(x, y, dimension, speed, color) {
 
 function webGLSetup() {
     setContext(canvas);
-    let squares = [];
-    for (let i = 0; i < 6; i += 1) {
-        squares.push(createSquare(Math.random() * (width - 50), Math.random() * (height - 50), 50, 6, [Math.random(), Math.random(), Math.random(), 1]));
-    }
-    window.setInterval(() => {
-        squares.forEach(square => {
-            square.update();
-        });
-        drawPrimitives();
-    }, 50);
+    drawCircle(75, 75, 50, 64, [1, 0, 0, 1]);
+    drawPrimitives();
 }
 
 function generateImageData() {
