@@ -36,9 +36,9 @@ function loop() {
 
 function start() {
     webGLSetup();
-    for (let i = 0; i < 6; i++) {
-        const speed = Math.random() * 50 + 50;
-        let newSquare = BouncingSquare.generateRandomSquare(width, height, 50, speed);
+    for (let i = 0; i < 100; i++) {
+        const speed = (Math.random() * 80) + 20;
+        let newSquare = BouncingSquare.generateRandomSquare(width, height, 10, speed);
         addGameObject(newSquare);
     }
     loop();

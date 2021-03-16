@@ -2,10 +2,28 @@ import GameObject from './game-object';
 import {drawRectangle} from 'graphics/primitive-shapes';
 
 const TOLERANCE = 0.1; // min speed until we round down to zero
-const FRICTION = 1; // percentage of initial speed remaining after an impact, 
+const FRICTION = 0.95; // percentage of initial speed remaining after an impact, 
 // < 1, speed is lost with each impact
 // = 1, no speed lost
 // > 1, speed is gained on each impact
+const MAX_SPEED = 100; // pixels/second, used for calculating the color
+const MIN_COLOR = [0, 0, 1, 1];
+const MAX_COLOR = [1, 0, 0, 1];
+
+function generateColorFromSpeed(speed) {
+    let ratio = speed / MAX_SPEED;
+    if (ratio > 1) {
+        ratio = 1;
+    }
+    let color = [];
+    for (let i = 0; i < 3; i++) {
+        let diff = MAX_COLOR[i] - MIN_COLOR[i];
+        color.push(diff * ratio + MIN_COLOR[i]);
+    }
+    color.push(1); // alpha value
+
+    return color;
+}
 
 class BouncingSquare extends GameObject {
     /**
@@ -40,6 +58,7 @@ class BouncingSquare extends GameObject {
         if (Math.abs(this.yVelocity) <= TOLERANCE) {
             this.yVelocity = 0;
         }
+        this.color = generateColorFromSpeed(Math.sqrt(this.xVelocity ** 2 + this.yVelocity ** 2));
     }
 
     update(deltaTime) {
@@ -81,7 +100,7 @@ class BouncingSquare extends GameObject {
         let angle = Math.random() * Math.PI * 2;
         let xVelocity = Math.cos(angle) * speed;
         let yVelocity = Math.sin(angle) * speed;
-        let color = [Math.random(), Math.random(), Math.random(), 1];
+        let color = generateColorFromSpeed(speed);
         return new BouncingSquare(x, y, xVelocity, yVelocity, xBound, yBound, dimension, color);
     }
 }
