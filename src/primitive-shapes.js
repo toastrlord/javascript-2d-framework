@@ -21,7 +21,7 @@ function drawRectangle(leftX, bottomY, rightX, topY, color) {
         rightX, bottomY,
         leftX, topY,
         rightX, topY,
-    ]
+    ];
     let colors = applyColor(points, color);
     addPrimitiveDrawingData(points, colors);
 }  
