@@ -1,7 +1,7 @@
 'use strict'
 
-import { createProgramFromScripts, resizeCanvasToDisplaySize } from './webgl-utils';
-import { matrix4, matrix3 } from './matrix-util';
+import { createProgramFromScripts, resizeCanvasToDisplaySize } from 'graphics/webgl-utils';
+import { matrix4, matrix3 } from 'math/matrix-util';
 
 /** @type {WebGLRenderingContext} */
 let gl;

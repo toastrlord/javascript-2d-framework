@@ -1,6 +1,6 @@
 'use strict'
-import {loadImageAndCreateTextureInfo, drawPrimitives, drawImage, setContext, makeProgram, useProgramData, clear} from './webgl-core';
-import {drawRectangle, drawCircle, drawTriangle} from './primitive-shapes';
+import {drawPrimitives, setContext} from 'graphics/webgl-core';
+import {drawRectangle} from 'graphics/primitive-shapes';
 
 const gameObjects = [];
 const canvas = document.querySelector('#canvas');
