@@ -13,7 +13,7 @@ function applyColor(points, color) {
     return result;
 }
 
-function drawRectangle(leftX, bottomY, rightX, topY, color) {
+function drawRectangle(leftX, bottomY, rightX, topY, color, depth = 0) {
     let points = [
         leftX, bottomY,
         rightX, bottomY,
@@ -23,14 +23,14 @@ function drawRectangle(leftX, bottomY, rightX, topY, color) {
         rightX, topY,
     ];
     let colors = applyColor(points, color);
-    addPrimitiveDrawingData(points, colors);
+    addPrimitiveDrawingData(points, colors, depth);
 }  
 
-function drawTriangle(points, color) {
-    addPrimitiveDrawingData(points, applyColor(points, color));
+function drawTriangle(points, color, depth = 0) {
+    addPrimitiveDrawingData(points, applyColor(points, color), depth);
 }
 
-function drawCircle(centerX, centerY, radius, divisions, color) {
+function drawCircle(centerX, centerY, radius, divisions, color, depth = 0) {
     let points = [];
     let dTheta = 2 * Math.PI / divisions;
     let center = [centerX, centerY];
@@ -44,7 +44,7 @@ function drawCircle(centerX, centerY, radius, divisions, color) {
         points.push(...[prevX, prevY]);
     }
     let colors = applyColor(points, color);
-    addPrimitiveDrawingData(points, colors);
+    addPrimitiveDrawingData(points, colors, depth);
 }
 
 export {drawRectangle, drawTriangle, drawCircle}

@@ -2,7 +2,7 @@ import GameObject from './game-object';
 import {drawRectangle} from 'graphics/primitive-shapes';
 
 const TOLERANCE = 0.1; // min speed until we round down to zero
-const FRICTION = 0.95; // percentage of initial speed remaining after an impact, 
+const FRICTION = 0.75; // percentage of initial speed remaining after an impact, 
 // < 1, speed is lost with each impact
 // = 1, no speed lost
 // > 1, speed is gained on each impact
@@ -11,7 +11,7 @@ const MIN_COLOR = [0, 0, 1, 1];
 const MAX_COLOR = [1, 0, 0, 1];
 
 function generateColorFromSpeed(speed) {
-    let ratio = speed / MAX_SPEED;
+    let ratio = (speed / MAX_SPEED) ** 2;
     if (ratio > 1) {
         ratio = 1;
     }
@@ -36,8 +36,9 @@ class BouncingSquare extends GameObject {
      * @param {Number} yBounds 
      * @param {Number} dimension 
      * @param {[Number]} color 
+     * @param {Number} depth Draw depth of the square
      */
-    constructor(x, y, xVelocity, yVelocity, xBounds, yBounds, dimension, color) {
+    constructor(x, y, xVelocity, yVelocity, xBounds, yBounds, dimension, color, depth) {
         super();
         this.x = x;
         this.y = y;
@@ -47,6 +48,7 @@ class BouncingSquare extends GameObject {
         this.yBounds = yBounds;
         this.dimension = dimension;
         this.color = color;
+        this.depth = depth;
     }
 
     applyFriction() {
@@ -84,7 +86,7 @@ class BouncingSquare extends GameObject {
         }
         this.x += this.xVelocity * deltaTime;
         this.y += this.yVelocity * deltaTime;
-        drawRectangle(this.x, this.y, this.x + this.dimension, this.y + this.dimension, this.color);
+        drawRectangle(this.x, this.y, this.x + this.dimension, this.y + this.dimension, this.color, this.depth);
     }
 
     /**
@@ -94,14 +96,14 @@ class BouncingSquare extends GameObject {
      * @param {Number} dimension  Size of the square in pixels
      * @param {Number} speed Speed of the square in pixels/second
      */
-    static generateRandomSquare(xBound, yBound, dimension, speed) {
+    static generateRandomSquare(xBound, yBound, dimension, speed, depth) {
         let x = Math.random() * xBound;
         let y = Math.random() * yBound;
         let angle = Math.random() * Math.PI * 2;
         let xVelocity = Math.cos(angle) * speed;
         let yVelocity = Math.sin(angle) * speed;
         let color = generateColorFromSpeed(speed);
-        return new BouncingSquare(x, y, xVelocity, yVelocity, xBound, yBound, dimension, color);
+        return new BouncingSquare(x, y, xVelocity, yVelocity, xBound, yBound, dimension, color, depth);
     }
 }
 

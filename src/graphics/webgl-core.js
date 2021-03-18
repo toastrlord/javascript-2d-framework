@@ -6,9 +6,10 @@ import { matrix4, matrix3 } from 'math/matrix-util';
 /** @type {WebGLRenderingContext} */
 let gl;
 let currentProgramData;
-const primitiveDrawingData = {a_position: [], a_color: [], u_resolution: []};
+const primitiveDrawingData = {a_position: {}, a_color: {}, u_resolution: []};
 let primitiveProgramData;
 let imageProgramData;
+let maxDepth = 0;
 
 /** 
  * Setup the WebGL render context
@@ -211,15 +212,49 @@ function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHei
 
 }
 
-function addPrimitiveDrawingData(points, colors) {
-    primitiveDrawingData.a_position.push(...points);
-    primitiveDrawingData.a_color.push(...colors);
+/**
+ * 
+ * @param {[Number]} points 
+ * @param {[Number]} colors 
+ * @param {Number} depth Draw order of this data, lower depth means it is drawn sooner, larger depth means it is drawn later
+ */
+function addPrimitiveDrawingData(points, colors, depth = 0) {
+    if (primitiveDrawingData.a_position[depth] === undefined) {
+        if (depth > maxDepth) {
+            maxDepth = depth;
+        }
+        primitiveDrawingData.a_position[depth] = [];
+        primitiveDrawingData.a_color[depth] = [];
+    }
+    primitiveDrawingData.a_position[depth].push(...points);
+    primitiveDrawingData.a_color[depth].push(...colors);
+}
+
+/**
+ * Take all drawing data and unfold it based on depth (e.g. depth = 0 is drawn before depth = 1, etc..) so we can bind it with webgl later
+ */
+function generatePrimitiveDrawingData() {
+    let depth = 0;
+    let positions = [];
+    let colors = [];
+    while (depth <= maxDepth) {
+        if (primitiveDrawingData.a_position[depth] === undefined) {
+            depth += 1;
+            continue;
+        }
+        positions.push(...primitiveDrawingData.a_position[depth]);
+        colors.push(...primitiveDrawingData.a_color[depth]);
+        depth += 1;
+    }
+    primitiveDrawingData.a_position = positions;
+    primitiveDrawingData.a_color = colors;
 }
 
 /**
  * Draw primitives (i.e. rectangles) using the values supplied in primitiveDrawingData
  */
 function drawPrimitives() {
+    generatePrimitiveDrawingData();
     primitiveDrawingData.u_resolution = [gl.canvas.width, gl.canvas.height];
     useProgramData(primitiveProgramData);
     setupShaderVars(primitiveDrawingData);
@@ -235,8 +270,9 @@ function drawPrimitives() {
     let count = primitiveDrawingData.a_position.length / 2; // execute the vertex shader once for every pair of points provided
     gl.drawArrays(primitiveType, offset, count);
     Object.keys(primitiveDrawingData).forEach(key => {
-        primitiveDrawingData[key] = [];
+        primitiveDrawingData[key] = {};
     })
+    maxDepth = 0;
 }
 
 export {loadImageAndCreateTextureInfo, drawImages, setContext, makeProgram, useProgramData, drawPrimitives, clear, addPrimitiveDrawingData};

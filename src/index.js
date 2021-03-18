@@ -23,6 +23,9 @@ function update() {
 }
 
 function render() {
+    // test some stuff real quick
+    drawRectangle(0, 0, 100, 200, [0, 1, 0, 1], 0);
+    drawRectangle(100, 0, 200, 200, [1, 1, 0, 1], 3);
     drawPrimitives();
 }
 
@@ -36,9 +39,9 @@ function loop() {
 
 function start() {
     webGLSetup();
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 50; i++) {
         const speed = (Math.random() * 80) + 20;
-        let newSquare = BouncingSquare.generateRandomSquare(width, height, 10, speed);
+        let newSquare = BouncingSquare.generateRandomSquare(width, height, 10, speed, 2);
         addGameObject(newSquare);
     }
     loop();
