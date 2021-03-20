@@ -1,8 +1,8 @@
 'use strict'
 import BouncingSquare from './bouncing-square';
-import {drawPrimitives, setContext} from 'graphics/webgl-core';
+import {drawPrimitives, setContext, clear} from 'graphics/webgl-core';
 import {getGameObjects, addGameObject, removeGameObject} from './game-object-manager';
-import {drawRectangle} from 'graphics/primitive-shapes';
+import {addKeyBind} from 'input/key-manager';
 
 const canvas = document.querySelector('#canvas');
 const width = canvas.width;
@@ -12,6 +12,11 @@ function webGLSetup() {
     setContext(canvas);
 }
 
+let timeStamp = Date.now();
+
+/**
+ * Perform game logic
+ */
 function update() {
     let now = Date.now();
     // convert to milliseconds
@@ -22,15 +27,16 @@ function update() {
     timeStamp = now;
 }
 
+/**
+ * Perform rendering
+ */
 function render() {
-    // test some stuff real quick
-    drawRectangle(0, 0, 100, 200, [0, 1, 0, 1], 0);
-    drawRectangle(100, 0, 200, 200, [1, 1, 0, 1], 3);
     drawPrimitives();
 }
 
-let timeStamp = Date.now();
-
+/**
+ * Main game loop
+ */
 function loop() {
     update();
     render();
@@ -44,6 +50,9 @@ function start() {
         let newSquare = BouncingSquare.generateRandomSquare(width, height, 10, speed, 2);
         addGameObject(newSquare);
     }
+    addKeyBind('arrowleft', () => {
+        console.log('left arrow press!');
+    });
     loop();
 }
 

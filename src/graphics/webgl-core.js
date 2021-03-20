@@ -47,7 +47,7 @@ function useProgramData(programData) {
 }
 
 /**
- * Clears the current canvas
+ * Clears the current canvas and sets the clear color
  * @param {Number[]} color Color in [r, g, b, a] format
  */
 function clear(color) {
