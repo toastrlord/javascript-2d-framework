@@ -18,16 +18,18 @@ class ControllableSquare extends Square {
         super(x, y, 0, 0, xBounds, yBounds, dimension, color, depth);
         this.currentVelocity = [0, 0];
         let square = this;
-        addKeyBind('arrowleft', function() {
+        addKeyBind('keydown', 'arrowleft', function() {
             square.currentVelocity[0] = -xVelocity;
         });
-        addKeyBind('arrowright', function() {
+        addKeyBind('keydown', 'arrowright', function() {
             square.currentVelocity[0] = xVelocity;
         });
-        addKeyBind(' ', function() {
+        addKeyBind('keyup', 'arrowright', function() {
             square.currentVelocity[0] = 0;
-            square.currentVelocity[1] = 0;
         });
+        addKeyBind('keyup', 'arrowleft', function() {
+            square.currentVelocity[0] = 0;
+        })
     }
 
     update(deltaTime) {

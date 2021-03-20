@@ -1,69 +1,60 @@
-const keyBinds = {}; // object key is the keyboard key, value is a no-arg function to be executed when that key is pressed
+import KeyBindContainer from 'input/keybinds';
+
+const keyBinds = {};
+keyBinds['keydown'] = new KeyBindContainer();
+keyBinds['keyup'] = new KeyBindContainer();
 
 /**
- * Clear ALL currently registered key actions
+ * Add a key bind, performing this action in addition to any other actions that might be happening for this key
+ * @param {string} type 
+ * @param {string} key 
+ * @param {function} action
  */
-function clearAllKeyBinds() {
-    Object.keys(keyBinds).forEach(key => {
-        delete keyBinds[key];
+function addKeyBind(type, key, action) {
+    keyBinds[type].addKeyBind(key, action);
+}
+
+/**
+ * Add a key bind, replacing any action previously bound to this key
+ * @param {string} type 
+ * @param {string} key 
+ * @param {function} action 
+ */
+function replaceKeyBind(type, key, action) {
+    keyBinds[type].replaceKeyBind(key, action);
+}
+
+/**
+ * Remove the action associated with this key
+ * @param {string} type 
+ * @param {string} key 
+ */
+function clearKeyBind(type, key) {
+    keyBinds[type].clearKeyBind(key);
+}
+
+/**
+ * Clear all keybinds for this type
+ * @param {string} type 
+ */
+function clearAllKeyBinds(type) {
+    keyBinds[type].clearAllKeyBinds();
+}
+
+/**
+ * Listen for events from the window for all registered KeyBindContainers
+ * @param {string} type 
+ */
+function listenForEvents(type) {
+    window.addEventListener(type, (e) => {
+        keyBinds[type].performKeyAction(e.key.toLowerCase());
     });
 }
 
-/**
- * Clear the action associated with this key (if any)
- * @param {string} key 
- */
-function clearKeyBind(key) {
-    delete keyBinds[key.toLowerCase];
-}
-
-function performKeyAction(key) {
-    if (keyBinds[key] !== undefined) {
-        keyBinds[key]();
-    }
-}
-
-/**
- * Create a composite function, which executes f1 then f2
- * @param {function} f1 
- * @param {function} f2 
- */
-function combineFunctions(f1, f2) {
-    return () => {
-        f1();
-        f2();
-    }
-}
-
-/**
- * Register this action to this key. Will be combined with any actions that are already there, with the new action being performed after the first
- * @param {string} key String of the key (will be matched to event.key)
- * @param {function} action 
- */
-function addKeyBind(key, action) {
-    let lowercaseKey = key.toLowerCase();
-    if (keyBinds[lowercaseKey] === undefined) {
-        keyBinds[lowercaseKey] = action;
-    }
-    else {
-        keyBinds[lowercaseKey] = combineFunctions(keyBinds[lowercaseKey], action);
-    }
-}
-
-/**
- * Register this action to this key, replacing any previous action
- * @param {string} key 
- * @param {function} action 
- */
-function replaceKeyBind(key, action) {
-    let lowercaseKey = key.toLowerCase();
-    delete keyBinds[lowercaseKey];
-    keyBinds[lowercaseKey] = action;
-}
 
 // listen for events when this module is loaded
-window.addEventListener('keydown', (e) => {
-    performKeyAction(e.key.toLowerCase());
+Object.keys(keyBinds).forEach(type => {
+    listenForEvents(type);
 });
 
 export {clearAllKeyBinds, clearKeyBind, addKeyBind, replaceKeyBind};
