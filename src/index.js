@@ -1,5 +1,6 @@
 'use strict'
 import BouncingSquare from './bouncing-square';
+import ControllableSquare from './controllable-square';
 import {drawPrimitives, setContext, clear} from 'graphics/webgl-core';
 import {getGameObjects, addGameObject, removeGameObject} from './game-object-manager';
 import {addKeyBind} from 'input/key-manager';
@@ -50,9 +51,8 @@ function start() {
         let newSquare = BouncingSquare.generateRandomSquare(width, height, 10, speed, 2);
         addGameObject(newSquare);
     }
-    addKeyBind('arrowleft', () => {
-        console.log('left arrow press!');
-    });
+    let controllable = new ControllableSquare(0, 0, 25, 25, width, height, 100, [1, 0, 1, 1], 0);
+    addGameObject(controllable);
     loop();
 }
 

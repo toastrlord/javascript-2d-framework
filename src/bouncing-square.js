@@ -1,5 +1,4 @@
-import GameObject from './game-object';
-import {drawRectangle} from 'graphics/primitive-shapes';
+import Square from './square';
 
 const TOLERANCE = 0.1; // min speed until we round down to zero
 const FRICTION = 0.75; // percentage of initial speed remaining after an impact, 
@@ -25,7 +24,7 @@ function generateColorFromSpeed(speed) {
     return color;
 }
 
-class BouncingSquare extends GameObject {
+class BouncingSquare extends Square {
     /**
      * 
      * @param {Number} x 
@@ -39,7 +38,7 @@ class BouncingSquare extends GameObject {
      * @param {Number} depth Draw depth of the square
      */
     constructor(x, y, xVelocity, yVelocity, xBounds, yBounds, dimension, color, depth) {
-        super();
+        super(x, y, xVelocity, yVelocity, xBounds, yBounds, dimension, color, depth);
         this.x = x;
         this.y = y;
         this.xVelocity = xVelocity;
@@ -84,9 +83,7 @@ class BouncingSquare extends GameObject {
             this.yVelocity = -this.yVelocity;
             this.applyFriction();
         }
-        this.x += this.xVelocity * deltaTime;
-        this.y += this.yVelocity * deltaTime;
-        drawRectangle(this.x, this.y, this.x + this.dimension, this.y + this.dimension, this.color, this.depth);
+        Square.prototype.update.call(this, [deltaTime]);
     }
 
     /**
