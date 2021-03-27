@@ -1,5 +1,5 @@
 'use strict'
-import BouncingSquare from './bouncing-square';
+import createBall from './ball';
 import createPaddle from './paddle';
 import {drawPrimitives, setContext, clear} from 'graphics/webgl-core';
 import {getGameObjects, addGameObject, removeGameObject} from './game-object-manager';
@@ -64,10 +64,11 @@ function loop() {
 
 function start() {
     webGLSetup();
-    let controllable = createPaddle(0, 0, 100, 25, 60, 5, [1, 0, 1, 1], 0);
+    let controllable = createPaddle(0, 0, 75, 15, 60, [1, 0, 1, 1]);
     addGameObject(controllable);
-    let ball = new BouncingSquare(0, 100, 50, -50, 5, 0);
-    addGameObject(ball);
+    console.log(controllable);
+    //let ball = new BouncingSquare(0, 100, 50, -50, 5, 0);
+    //addGameObject(ball);
     loop();
 }
 

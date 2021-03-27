@@ -1,6 +1,7 @@
 import DrawRectangleComponent from 'graphics/drawComponent';
 import {addKeyBind} from './input/key-manager';
 import { RectCollider } from './physics/collider';
+import GameObject from './game-object';
 
 function createPaddle(x, y, width, height, xVelocity, color) {
     const paddle = new GameObject(x, y);

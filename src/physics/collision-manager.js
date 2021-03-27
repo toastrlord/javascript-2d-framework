@@ -4,6 +4,7 @@ const staticObjects = []; // more like kinematic objects, since they can't be mo
 // TODO: currently assumes that moving objects cannot interact with each other, only static objects 
 // also only processes a single collision event
 
+// TODO: not good! scales up by O(m*n), where m and n are the lengths of movingobjects and staticobjects arrays, respectively
 function checkForCollisions() {
     movingObjects.forEach(mover => {
         staticObjects.forEach(staticObj => {

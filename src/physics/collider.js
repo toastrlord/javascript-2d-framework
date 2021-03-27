@@ -1,3 +1,5 @@
+import {addStaticObject, removeStaticObject, addMovingObject, removeMovingObject} from './collision-manager';
+
 function rectOverlapsRect(rect1, rect2) {
     // TODO TESTME!!!
     if (rect1.x >= rect2.x && rect1.x <= rect2.x + rect2.width) {
@@ -32,11 +34,17 @@ class Collider {
         this.isMoving = isMoving;
     }
 
+    get x() {
+        return this.parent.x;
+    }
+
+    get y() {
+        return this.parent.y;
+    }
+
     onCreate(parent) {
         this.parent = parent;
-        this.x = parent.x;
-        this.y = parent.y;
-        if (isMoving) {
+        if (this.isMoving) {
             addMovingObject(this);
         }
         else {
@@ -45,17 +53,17 @@ class Collider {
     }
 
     onDestroy(parent) {
-        if (isMoving) {
+        if (this.isMoving) {
             removeMovingObject(this);
         }
         else {
             removeStaticObject(this);
         }
     }
-
+    
     update(deltaTime) {
-        parent.x += deltaTime * this.xVelocity;
-        parent.y += deltaTime * this.yVelocity;
+        this.parent.x += deltaTime * this.xVelocity;
+        this.parent.y += deltaTime * this.yVelocity;
     }
 }
 
@@ -73,6 +81,10 @@ class RectCollider extends Collider {
         if (other instanceof RectCollider) {
             return rectOverlapsRect(this, other);
         }
+    }
+
+    update(deltaTime) {
+        super.update([deltaTime]);
     }
 }
 

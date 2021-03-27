@@ -7,27 +7,9 @@ class GameObject {
         this.components = [];
     }
 
-    set x(newX) {
-        this.x = newX;
-    }
-
-    set y(newY) {
-        this.y = newY;
-    }
-
-    get x(){
-        return this.x;
-    }
-
-    get y() {
-        return this.y;
-    }
-
     addComponent(component) {
         this.components.push(component);
-        if (component.hasOwnProperty('onCreate')) {
-            component.onCreate(this);
-        }
+        component.onCreate(this);
     }
 
     removeComponent(component) {
@@ -39,9 +21,7 @@ class GameObject {
 
     update(deltaTime) {
         this.components.forEach(component => {
-            if (component.hasOwnProperty('update')) {
-                component.update(deltaTime);
-            }
+            component.update(deltaTime);
         });
     }
 }

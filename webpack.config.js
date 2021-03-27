@@ -8,6 +8,7 @@ module.exports = {
             graphics: path.resolve(__dirname, '/src/graphics/'),
             math: path.resolve(__dirname, '/src/math/'),
             input: path.resolve(__dirname, '/src/input'),
+            physics: path.resolve(__dirname, '/src/physics'),
         },
     },
 }
