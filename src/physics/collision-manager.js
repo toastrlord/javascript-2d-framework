@@ -1,5 +1,5 @@
 const movingObjects = [];
-const staticObjects = [];
+const staticObjects = []; // more like kinematic objects, since they can't be moved via the collision manager?
 
 // TODO: currently assumes that moving objects cannot interact with each other, only static objects 
 // also only processes a single collision event
@@ -8,7 +8,6 @@ function checkForCollisions() {
     movingObjects.forEach(mover => {
         staticObjects.forEach(staticObj => {
            if (mover.checkCollision(staticObj)) {
-               
            } 
         });
     });

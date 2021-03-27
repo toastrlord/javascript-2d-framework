@@ -15,6 +15,7 @@ function rectOverlapsRect(rect1, rect2) {
 function circleOverlapsCircle(circ1, circ2) {
     const sumRadius = circ1.r + circ2.r;
     const distance = Math.sqrt((circ1.x - circ2.x)**2 + (circ2.y - circ2.x)**2);
+
     return distance <= sumRadius;
 }
 
@@ -24,14 +25,17 @@ function circleOverlapsRect(circle, rect) {
     return false;
 }
 
-class Collider extends Component {
-    constructor(x, y, isMoving) {
-        this.x = x;
-        this.y = y;
+class Collider {
+    constructor(isMoving) {
+        this.xVelocity = 0;
+        this.yVelocity = 0;
         this.isMoving = isMoving;
     }
 
-    onCreate() {
+    onCreate(parent) {
+        this.parent = parent;
+        this.x = parent.x;
+        this.y = parent.y;
         if (isMoving) {
             addMovingObject(this);
         }
@@ -40,7 +44,7 @@ class Collider extends Component {
         }
     }
 
-    onDestroy() {
+    onDestroy(parent) {
         if (isMoving) {
             removeMovingObject(this);
         }
@@ -48,11 +52,16 @@ class Collider extends Component {
             removeStaticObject(this);
         }
     }
+
+    update(deltaTime) {
+        parent.x += deltaTime * this.xVelocity;
+        parent.y += deltaTime * this.yVelocity;
+    }
 }
 
 class RectCollider extends Collider {
-    constructor(x, y, width, height) {
-        super(x, y);
+    constructor(width, height, isMoving) {
+        super(isMoving);
         this.width = width;
         this.height = height;
     }
@@ -68,8 +77,8 @@ class RectCollider extends Collider {
 }
 
 class CircleCollider extends Collider{
-    constructor(x, y, radius) {
-        super(x, y);
+    constructor(radius, isMoving) {
+        super(isMoving);
         this.radius = radius;
     }
 
