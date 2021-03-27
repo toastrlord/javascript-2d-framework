@@ -9,21 +9,18 @@ class Square extends GameObject {
      * @param {Number} y 
      * @param {Number} xVelocity 
      * @param {Number} yVelocity 
-     * @param {Number} xBounds 
-     * @param {Number} yBounds 
      * @param {Number} dimension 
      * @param {[Number]} color 
      * @param {Number} depth Draw depth of the square
      */
-    constructor(x, y, xVelocity, yVelocity, xBounds, yBounds, dimension, color, depth) {
+    constructor(x, y, xVelocity, yVelocity, width, height, color, depth) {
         super();
         this.x = x;
         this.y = y;
         this.xVelocity = xVelocity;
         this.yVelocity = yVelocity;
-        this.xBounds = xBounds;
-        this.yBounds = yBounds;
-        this.dimension = dimension;
+        this.width = width;
+        this.height = height;
         this.color = color;
         this.depth = depth;
     }
@@ -31,7 +28,7 @@ class Square extends GameObject {
     update(deltaTime) {
         this.x += this.xVelocity * deltaTime;
         this.y += this.yVelocity * deltaTime;
-        drawRectangle(this.x, this.y, this.x + this.dimension, this.y + this.dimension, this.color, this.depth);
+        drawRectangle(this.x, this.y, this.x + this.width, this.y + this.height, this.color, this.depth);
     }
 }
 

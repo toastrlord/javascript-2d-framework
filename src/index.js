@@ -1,16 +1,34 @@
 'use strict'
 import BouncingSquare from './bouncing-square';
-import ControllableSquare from './controllable-square';
+import Paddle from './paddle';
 import {drawPrimitives, setContext, clear} from 'graphics/webgl-core';
 import {getGameObjects, addGameObject, removeGameObject} from './game-object-manager';
 import {addKeyBind} from 'input/key-manager';
 
 const canvas = document.querySelector('#canvas');
-const width = canvas.width;
-const height = canvas.height;
+let width = canvas.width;
+let height = canvas.height;
 
 function webGLSetup() {
     setContext(canvas);
+    canvas.height = 600;
+    height = canvas.height;
+    clear([0, 0, 0, 1]);
+}
+
+function resizeCanvas(newWidth, newHeight) {
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+    width = newWidth;
+    height = newHeight;
+}
+
+function getCanvasWidth() {
+    return width;
+}
+
+function getCanvasHeight() {
+    return height;
 }
 
 let timeStamp = Date.now();
@@ -46,14 +64,13 @@ function loop() {
 
 function start() {
     webGLSetup();
-    for (let i = 0; i < 50; i++) {
-        const speed = (Math.random() * 80) + 20;
-        let newSquare = BouncingSquare.generateRandomSquare(width, height, 10, speed, 2);
-        addGameObject(newSquare);
-    }
-    let controllable = new ControllableSquare(0, 0, 25, 25, width, height, 100, [1, 0, 1, 1], 0);
+    let controllable = new Paddle(0, 0, 100, 25, 60, 5, [1, 0, 1, 1], 0);
     addGameObject(controllable);
+    let ball = new BouncingSquare(0, 100, 50, -50, 5, 0);
+    addGameObject(ball);
     loop();
 }
 
 start();
+
+export {getCanvasWidth, getCanvasHeight};

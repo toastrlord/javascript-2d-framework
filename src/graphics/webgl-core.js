@@ -254,6 +254,7 @@ function generatePrimitiveDrawingData() {
  * Draw primitives (i.e. rectangles) using the values supplied in primitiveDrawingData
  */
 function drawPrimitives() {
+    gl.clear(gl.COLOR_BUFFER_BIT);
     generatePrimitiveDrawingData();
     primitiveDrawingData.u_resolution = [gl.canvas.width, gl.canvas.height];
     useProgramData(primitiveProgramData);

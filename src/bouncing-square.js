@@ -1,28 +1,7 @@
+import { removeGameObject } from './game-object-manager';
 import Square from './square';
 
-const TOLERANCE = 0.1; // min speed until we round down to zero
-const FRICTION = 0.75; // percentage of initial speed remaining after an impact, 
-// < 1, speed is lost with each impact
-// = 1, no speed lost
-// > 1, speed is gained on each impact
-const MAX_SPEED = 100; // pixels/second, used for calculating the color
-const MIN_COLOR = [0, 0, 1, 1];
-const MAX_COLOR = [1, 0, 0, 1];
-
-function generateColorFromSpeed(speed) {
-    let ratio = (speed / MAX_SPEED) ** 2;
-    if (ratio > 1) {
-        ratio = 1;
-    }
-    let color = [];
-    for (let i = 0; i < 3; i++) {
-        let diff = MAX_COLOR[i] - MIN_COLOR[i];
-        color.push(diff * ratio + MIN_COLOR[i]);
-    }
-    color.push(1); // alpha value
-
-    return color;
-}
+const WHITE = [1, 1, 1, 1];
 
 class BouncingSquare extends Square {
     /**
@@ -34,32 +13,10 @@ class BouncingSquare extends Square {
      * @param {Number} xBounds 
      * @param {Number} yBounds 
      * @param {Number} dimension 
-     * @param {[Number]} color 
      * @param {Number} depth Draw depth of the square
      */
-    constructor(x, y, xVelocity, yVelocity, xBounds, yBounds, dimension, color, depth) {
-        super(x, y, xVelocity, yVelocity, xBounds, yBounds, dimension, color, depth);
-        this.x = x;
-        this.y = y;
-        this.xVelocity = xVelocity;
-        this.yVelocity = yVelocity;
-        this.xBounds = xBounds;
-        this.yBounds = yBounds;
-        this.dimension = dimension;
-        this.color = color;
-        this.depth = depth;
-    }
-
-    applyFriction() {
-        this.xVelocity *= FRICTION;
-        this.yVelocity *= FRICTION;
-        if (Math.abs(this.xVelocity) <= TOLERANCE) {
-            this.xVelocity = 0;
-        }
-        if (Math.abs(this.yVelocity) <= TOLERANCE) {
-            this.yVelocity = 0;
-        }
-        this.color = generateColorFromSpeed(Math.sqrt(this.xVelocity ** 2 + this.yVelocity ** 2));
+    constructor(x, y, xVelocity, yVelocity, dimension, depth) {
+        super(x, y, xVelocity, yVelocity, dimension, dimension, WHITE, depth);
     }
 
     update(deltaTime) {
@@ -74,9 +31,8 @@ class BouncingSquare extends Square {
             this.applyFriction();
         }
         if (this.y < 0) {
-            this.y = 0;
-            this.yVelocity = -this.yVelocity;
-            this.applyFriction();
+            // need to account for missed ball
+            removeGameObject(this);
         }
         if (this.y + this.dimension > this.yBounds) {
             this.y = this.yBounds - this.dimension;
