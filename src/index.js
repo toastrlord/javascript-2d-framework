@@ -1,9 +1,11 @@
 'use strict'
 import createBall from './ball';
 import createPaddle from './paddle';
+import createWall from './wall';
 import {drawPrimitives, setContext, clear} from 'graphics/webgl-core';
 import {getGameObjects, addGameObject, removeGameObject} from './game-object-manager';
 import {addKeyBind} from 'input/key-manager';
+import { checkForCollisions } from './physics/collision-manager';
 
 const canvas = document.querySelector('#canvas');
 let width = canvas.width;
@@ -43,6 +45,7 @@ function update() {
     getGameObjects().forEach(obj => {
         obj.update(deltaTime);
     });
+    checkForCollisions();
     timeStamp = now;
 }
 
@@ -64,11 +67,15 @@ function loop() {
 
 function start() {
     webGLSetup();
-    let controllable = createPaddle(0, 0, 75, 15, 60, [1, 0, 1, 1]);
+    const controllable = createPaddle(0, 0, 75, 15, 60, [1, 0, 1, 1]);
     addGameObject(controllable);
-    console.log(controllable);
-    //let ball = new BouncingSquare(0, 100, 50, -50, 5, 0);
-    //addGameObject(ball);
+    const ball = createBall(50, 200, 5, 5, [0, -100]);
+    addGameObject(ball);
+    const leftWall = createWall(-20, 0, 20, getCanvasHeight());
+    addGameObject(leftWall);
+    const rightWall = createWall(getCanvasWidth(), 0, 20, getCanvasHeight());
+    addGameObject(rightWall);
+    const topWall = createWall(0, getCanvasHeight(), getCanvasWidth(), 20);
     loop();
 }
 

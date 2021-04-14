@@ -1,17 +1,20 @@
 import {addStaticObject, removeStaticObject, addMovingObject, removeMovingObject} from './collision-manager';
 
 function rectOverlapsRect(rect1, rect2) {
-    // TODO TESTME!!!
-    if (rect1.x >= rect2.x && rect1.x <= rect2.x + rect2.width) {
-        return (rect1.y >= rect2.y && rect1.y <= rect2.y + rect2.height) || 
-        (rect1.y + rect1.height >= rect2.y && rect1.y + rect1.height <= rect2.y + recy2.height);
-    }
-    if (rect1.x + rect1.width >= rect2.x && rect1.x + rect1.width <= rect2.x + rect2.width) {
-        return (rect1.y >= rect2.y && rect1.y <= rect2.y + rect2.height) || 
-        (rect1.y + rect1.height >= rect2.y && rect1.y + rect1.height <= rect2.y + recy2.height);
-    }
+    const leftSide1 = rect1.x;
+    const rightSide1 = rect1.x + rect1.width;
+    const bottomSide1 = rect1.y;
+    const topSide1 = rect1.y + rect1.height;
 
-    return false;
+    const leftSide2 = rect2.x;
+    const rightSide2 = rect2.x + rect2.width;
+    const bottomSide2 = rect2.y;
+    const topSide2 = rect2.y + rect2.height;
+
+    const horizontal = (leftSide2 <= leftSide1 && leftSide1 <= rightSide2) || (leftSide2 <= rightSide1 && rightSide1 <= rightSide2);
+    const vertical = (bottomSide2 <= bottomSide1 && bottomSide1 <= topSide2) || (bottomSide2 <= topSide1 && topSide1 <= topSide2);
+
+    return horizontal && vertical;
 }
 
 function circleOverlapsCircle(circ1, circ2) {
@@ -23,7 +26,7 @@ function circleOverlapsCircle(circ1, circ2) {
 
 function circleOverlapsRect(circle, rect) {
     // TODO need to implement
-
+    console.log('NOT YET IMPLEMENTED: CIRCLE OVERLAPS RECT');
     return false;
 }
 

@@ -9,6 +9,29 @@ function checkForCollisions() {
     movingObjects.forEach(mover => {
         staticObjects.forEach(staticObj => {
            if (mover.checkCollision(staticObj)) {
+               const moverCenter = {x: mover.parent.x + mover.width / 2, y: mover.parent.y + mover.height / 2};
+               const staticCenter = {x: staticObj.parent.x + mover.height / 2, y: staticObj.parent.y + staticObj.height / 2};
+               const distX = moverCenter.x - staticCenter.x;
+               const distY = moverCenter.y - staticCenter.y;
+               // TODO: adjust mover so that it is not intersecting after the collision
+               //top/bottom collision
+               if (Math.abs(distY) < Math.abs(distX)) {
+                   mover.yVelocity = -mover.yVelocity;
+                   mover.xVelocity = mover.xVelocity + staticObj.xVelocity;
+                   if (distY > 0) {
+                    mover.parent.y = staticObj.parent.y + staticObj.height;
+                   } else {
+                    mover.parent.y = staticObj.parent.y - mover.height;
+                   }
+               } else { //otherwise must be horizontal collision
+                    mover.xVelocity = -mover.xVelocity;
+                    mover.yVelocity = mover.yVelocity + staticObj.yVelocity;
+                    if (distX > 0) {
+                        mover.parent.x = staticObj.parent.x + staticObj.width;
+                    } else {
+                        mover.parent.x = staticObj.parent.x - mover.width;
+                    }
+               }
            } 
         });
     });
