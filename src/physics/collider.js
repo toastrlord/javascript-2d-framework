@@ -14,6 +14,10 @@ function rectOverlapsRect(rect1, rect2) {
     const horizontal = (leftSide2 <= leftSide1 && leftSide1 <= rightSide2) || (leftSide2 <= rightSide1 && rightSide1 <= rightSide2);
     const vertical = (bottomSide2 <= bottomSide1 && bottomSide1 <= topSide2) || (bottomSide2 <= topSide1 && topSide1 <= topSide2);
 
+    if (horizontal && vertical) {
+        rect1.onImpact(rect2);
+        rect2.onImpact(rect1);
+    }
     return horizontal && vertical;
 }
 
@@ -35,6 +39,7 @@ class Collider {
         this.xVelocity = 0;
         this.yVelocity = 0;
         this.isMoving = isMoving;
+        this.impactListeners = [];
     }
 
     get x() {
@@ -67,6 +72,16 @@ class Collider {
     update(deltaTime) {
         this.parent.x += deltaTime * this.xVelocity;
         this.parent.y += deltaTime * this.yVelocity;
+    }
+
+    onImpact(other) {
+        this.impactListeners.forEach(listener => {
+            listener();
+        });
+    }
+
+    addImpactListener(func) {
+        this.impactListeners.push(func);
     }
 }
 

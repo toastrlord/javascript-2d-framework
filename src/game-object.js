@@ -19,6 +19,14 @@ class GameObject {
         this.components.splice(this.components.indexOf(component), 1);
     }
 
+    onDelete() {
+        this.components.forEach(c => {
+            if (c.onDelete) {
+                c.onDelete();
+            }
+        });
+    }
+
     update(deltaTime) {
         this.components.forEach(component => {
             component.update(deltaTime);

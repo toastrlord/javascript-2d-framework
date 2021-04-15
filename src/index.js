@@ -6,6 +6,7 @@ import {drawPrimitives, setContext, clear} from 'graphics/webgl-core';
 import {getGameObjects, addGameObject, removeGameObject} from './game-object-manager';
 import {addKeyBind} from 'input/key-manager';
 import { checkForCollisions } from './physics/collision-manager';
+import createBrick from './brick';
 
 const canvas = document.querySelector('#canvas');
 let width = canvas.width;
@@ -76,6 +77,11 @@ function start() {
     const rightWall = createWall(getCanvasWidth(), 0, 20, getCanvasHeight());
     addGameObject(rightWall);
     const topWall = createWall(0, getCanvasHeight(), getCanvasWidth(), 20);
+    addGameObject(topWall);
+
+    const testBrick = createBrick(50, 100, 4);
+    addGameObject(testBrick);
+
     loop();
 }
 

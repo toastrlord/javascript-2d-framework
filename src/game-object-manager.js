@@ -22,6 +22,7 @@ function getGameObjects() {
  * @param {*} gameObject 
  */
 function removeGameObject(gameObject) {
+    gameObject.onDelete();
     delete gameObjectDictionary[gameObject.id];
     availableIDs.push(gameObject.id);
 }
