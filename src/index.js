@@ -78,9 +78,11 @@ function start() {
     addGameObject(rightWall);
     const topWall = createWall(0, getCanvasHeight(), getCanvasWidth(), 20);
     addGameObject(topWall);
-
-    const testBrick = createBrick(50, 100, 4);
-    addGameObject(testBrick);
+    
+    for (let i = 0; i < 6; i++) {
+        const newBrick = createBrick(50 + 25 * i, 350, 4);
+        addGameObject(newBrick);
+    }
 
     loop();
 }

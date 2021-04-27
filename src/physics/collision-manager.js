@@ -11,27 +11,53 @@ function checkForCollisions() {
            if (mover.checkCollision(staticObj)) {
                const moverCenter = {x: mover.parent.x + mover.width / 2, y: mover.parent.y + mover.height / 2};
                const staticCenter = {x: staticObj.parent.x + mover.height / 2, y: staticObj.parent.y + staticObj.height / 2};
-               const distX = moverCenter.x - staticCenter.x;
-               const distY = moverCenter.y - staticCenter.y;
-               // TODO: adjust mover so that it is not intersecting after the collision
+               console.log(`Before resolution: Mover: ${moverCenter.x},${moverCenter.y} Static: ${staticCenter.x}, ${staticCenter.y}`);
+               const moverBottom = mover.parent.y;
+               const moverTop = mover.parent.y + mover.height;
+               const moverLeft = mover.parent.x;
+               const moverRight = mover.parent.x + mover.width;
+
+               const staticBottom = staticObj.parent.y;
+               const staticTop = staticObj.parent.y + staticObj.height;
+               const staticLeft = staticObj.parent.x;
+               const staticRight = staticObj.parent.x + staticObj.width;
+
+               const aboveDist = moverBottom - staticTop;
+               const belowDist = staticBottom - moverTop;
+               const leftDist = moverRight - staticLeft;
+               const rightDist = staticRight - moverLeft;
+
+               const distX = Math.min(
+                   Math.abs(leftDist), 
+                    Math.abs(rightDist));
+               const distY = Math.min(
+                Math.abs(aboveDist), 
+                Math.abs(belowDist));
+               console.log(`Above distance: ${aboveDist}, below distance: ${belowDist}`);
+               console.log(`Left distance: ${leftDist}, right distance: ${rightDist}`);
+
                //top/bottom collision
-               if (Math.abs(distY) < Math.abs(distX)) {
+               if (distY < distX) {
+                   console.log('Vertical collision');
                    mover.yVelocity = -mover.yVelocity;
                    mover.xVelocity = mover.xVelocity + staticObj.xVelocity;
-                   if (distY > 0) {
+                   
+                   if (Math.abs(aboveDist) < Math.abs(belowDist)) {
                     mover.parent.y = staticObj.parent.y + staticObj.height;
                    } else {
                     mover.parent.y = staticObj.parent.y - mover.height;
                    }
                } else { //otherwise must be horizontal collision
+                    console.log('Horizontal collision');
                     mover.xVelocity = -mover.xVelocity;
                     mover.yVelocity = mover.yVelocity + staticObj.yVelocity;
-                    if (distX > 0) {
-                        mover.parent.x = staticObj.parent.x + staticObj.width;
-                    } else {
+                    if (Math.abs(leftDist) < Math.abs(rightDist)) {
                         mover.parent.x = staticObj.parent.x - mover.width;
+                    } else {
+                        mover.parent.x = staticObj.parent.x + staticObj.width;
                     }
                }
+               console.log(`After resolution: Mover: ${moverCenter.x},${moverCenter.y} Static: ${staticCenter.x}, ${staticCenter.y}`);
            } 
         });
     });
