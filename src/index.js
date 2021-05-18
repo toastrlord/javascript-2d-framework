@@ -7,6 +7,7 @@ import {getGameObjects, addGameObject, removeGameObject} from './game-object-man
 import {addKeyBind} from 'input/key-manager';
 import { checkForCollisions } from './physics/collision-manager';
 import createBrick from './brick';
+import {generateTextCoords, testGlyphInfo} from './graphics/font-util';
 
 const canvas = document.querySelector('#canvas');
 let width = canvas.width;
@@ -67,6 +68,7 @@ function loop() {
 }
 
 function start() {
+    console.log(generateTextCoords(testGlyphInfo, [0, 0], 'hello world!'));
     webGLSetup();
     const controllable = createPaddle(0, 0, 75, 15, 60, [1, 0, 1, 1]);
     addGameObject(controllable);

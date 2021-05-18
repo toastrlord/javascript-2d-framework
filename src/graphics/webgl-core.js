@@ -179,9 +179,6 @@ function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHei
     useProgramData(imageProgramData);
     gl.bindTexture(gl.TEXTURE_2D, tex);
 
-    // TODO: load in our shader program, or just remove the arg and set useProgramData from index.js
-    useProgramData(imageProgramData);
-
     setupAttribBuffer(imageProgramData.attributeData['a_position'], positions, gl.DYNAMIC_DRAW);
     setupAttribBuffer(imageProgramData.attributeData['a_texcoord'], texcoords, gl.DYNAMIC_DRAW);
 
