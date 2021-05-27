@@ -22,7 +22,7 @@ const generateGlyphInfo = function(glyphs, letterWidth, letterHeight, textureWid
     for (let i = 0; i < glyphs.length; i++) {
         glyphInfo[glyphs[i]] = {x, y};
         x += letterWidth;
-        if (letterWidth >= textureWidth) {
+        if (x >= textureWidth) {
             x = 0;
             y += letterHeight;
         }
@@ -56,23 +56,23 @@ const generateTextCoords = function(glyphInfo, [xStart, yStart], text) {
             const y1 = yStart;
             const y2 = yStart + letterHeight;
 
-            const u1 = x1 / textureWidth;
-            const u2 = x2 / textureWidth;
+            const u1 = currentGlyphInfo.x / textureWidth;
+            const u2 = (currentGlyphInfo.x + letterWidth) / textureWidth;
 
-            const v1 = y1 / textureHeight;
-            const v2 = y2 / textureHeight;
+            const v1 = currentGlyphInfo.y / textureHeight;
+            const v2 = (currentGlyphInfo.y + letterHeight) / textureHeight;
 
             const pos1 = [x1, y1];
             const pos2 = [x2, y1];
             const pos3 = [x1, y2];
             const pos4 = [x2, y2];
-            positions.push(...pos1, ...pos2, ...pos3, ...pos4);
+            positions.push(...pos1, ...pos2, ...pos3, ...pos2, ...pos3, ...pos4);
 
-            const tex1 = [u1, v1];
-            const tex2 = [u2, v1];
-            const tex3 = [u1, v2];
-            const tex4 = [u2, v2];
-            texCoords.push(...tex1, ...tex2, ...tex3, ...tex4);
+            const tex1 = [u1, v2];
+            const tex2 = [u2, v2];
+            const tex3 = [u1, v1];
+            const tex4 = [u2, v1];
+            texCoords.push(...tex1, ...tex2, ...tex3, ...tex2, ...tex3, ...tex4);
         }
     }
 

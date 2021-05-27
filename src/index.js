@@ -8,6 +8,7 @@ import {addKeyBind} from 'input/key-manager';
 import { checkForCollisions } from './physics/collision-manager';
 import createBrick from './brick';
 import {generateTextCoords, testGlyphInfo} from './graphics/font-util';
+import { loadImageAndCreateTextureInfo, drawImages } from './graphics/webgl-core';
 
 const canvas = document.querySelector('#canvas');
 let width = canvas.width;
@@ -51,11 +52,14 @@ function update() {
     timeStamp = now;
 }
 
+let fontSheet;
+let fontInfo;
 /**
  * Perform rendering
  */
 function render() {
     drawPrimitives();
+    drawImages(fontInfo.positions, fontInfo.texCoords, fontSheet.texture, [{sX: 1, sY: 1, angle: 0, tX: 0, tY: 0}]);
 }
 
 /**
@@ -68,8 +72,10 @@ function loop() {
 }
 
 function start() {
-    console.log(generateTextCoords(testGlyphInfo, [0, 0], 'hello world!'));
+    //console.log(generateTextCoords(testGlyphInfo, [0, 0], 'hello world!'));
     webGLSetup();
+    fontSheet = loadImageAndCreateTextureInfo('./assets/chomps 8x8 font.png');
+    fontInfo = generateTextCoords(testGlyphInfo, [0, height - 8], 'hello world!');
     const controllable = createPaddle(0, 0, 75, 15, 60, [1, 0, 1, 1]);
     addGameObject(controllable);
     const ball = createBall(50, 200, 5, 5, [0, -100]);
@@ -80,7 +86,6 @@ function start() {
     addGameObject(rightWall);
     const topWall = createWall(0, getCanvasHeight(), getCanvasWidth(), 20);
     addGameObject(topWall);
-    
     for (let i = 0; i < 6; i++) {
         const newBrick = createBrick(50 + 25 * i, 350, 4);
         addGameObject(newBrick);

@@ -16,7 +16,9 @@ let maxDepth = 0;
  * @param {HTMLCanvasElement} canvas 
  */
 function setContext(canvas) {
-    gl = canvas.getContext('webgl');
+    gl = canvas.getContext('webgl', { alpha: false });
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     primitiveProgramData = makeProgram(document.querySelector('#pixel-vertex-shader-2d').textContent, document.querySelector('#color-fragment-shader-2d').textContent);
     imageProgramData = makeProgram(document.querySelector('#image-vertex-shader-2d').textContent,  document.querySelector('#image-fragment-shader-2d').textContent);
     if (!gl) {
@@ -159,6 +161,7 @@ function createTransformMatrices(transforms) {
 
 
 function drawImages(positions, texCoords, texture, transformData) {
+    useProgramData(imageProgramData);
     // TODO: right now, only binds a single texture to draw
     // TODO: positions and texCoords are the same pairs right now- will want to use indexing to make this a bit faster, though we'll want to retain
     // the ability to use different texCoords for when we use texture atlases
@@ -166,7 +169,7 @@ function drawImages(positions, texCoords, texture, transformData) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     setupAttribBuffer(currentProgramData.attributeData['a_position'], positions, gl.DYNAMIC_DRAW);
     setupAttribBuffer(currentProgramData.attributeData['a_texcoord'], texCoords, gl.DYNAMIC_DRAW);
-    setupAttribBuffer(currentProgramData.attributeData['a_matrix'], matrices, gl.DYNAMIC_DRAW);
+    //setupAttribBuffer(currentProgramData.attributeData['a_matrix'], matrices, gl.DYNAMIC_DRAW);
 
     setupUniform(currentProgramData.uniformData['u_resolution'], [canvas.width, canvas.height]);
     let textureLocation = currentProgramData.uniformData['u_texture'].location;
