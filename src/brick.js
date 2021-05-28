@@ -2,6 +2,7 @@ import GameObject from './game-object';
 import DrawRectangleComponent from './graphics/drawComponent';
 import { RectCollider } from './physics/collider';
 import {removeGameObject} from './game-object-manager';
+import { addScore } from './index';
 
 const RED = [1, 0, 0, 1];
 const GREEN = [0, 1, 0, 1];
@@ -28,6 +29,7 @@ const getColor = function(health) {
 class BrickComponent {
     constructor(health, renderComponent) {
         this.health = health;
+        this.score = health * 10;
         this.render = renderComponent;
 
         this.onHit = this.onHit.bind(this);
@@ -37,11 +39,10 @@ class BrickComponent {
         this.health -= 1;
         if (this.health <= 0) {
             removeGameObject(this.parent);
+            addScore(this.score);
         } else {
             this.render.color = getColor(this.health);
-            console.log(this.render);
         }
-        console.log(`Health: ${this.health}`);
     }
 
     update() {
@@ -66,4 +67,4 @@ const createBrick = function(x, y, startHealth) {
     return brickObject;
 }
 
-export default createBrick;
+export {createBrick, BRICK_HEIGHT, BRICK_WIDTH};

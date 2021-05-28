@@ -175,12 +175,16 @@ function drawImages(positions, texCoords, texture, transformData) {
     let textureLocation = currentProgramData.uniformData['u_texture'].location;
     gl.uniform1i(textureLocation, 0);
 
+    let matrixLocation = currentProgramData.uniformData['u_matrix'].location;
+    // TODO: NEEDS TO BE UPDATED! GLSL CODE NEEDS TO TAKE MATRICES VIA ATTRIBUTE, NOT UNIFORM
+    gl.uniformMatrix3fv(matrixLocation, false, matrices[0]);
+
     gl.drawArrays(gl.TRIANGLES, 0, positions.length / 2);
 }
 
-function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHeight, dstX, dstY, angle) {
+function drawImage(imageProgramData, positions, texcoords, texture, texWidth, texHeight, dstX, dstY, angle, sX, sY) {
     useProgramData(imageProgramData);
-    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
 
     setupAttribBuffer(imageProgramData.attributeData['a_position'], positions, gl.DYNAMIC_DRAW);
     setupAttribBuffer(imageProgramData.attributeData['a_texcoord'], texcoords, gl.DYNAMIC_DRAW);
@@ -191,7 +195,7 @@ function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHei
     let matrix = matrix3.identity();
 
     // this matrix scales our unit quad up to texWidth, texHeight
-    matrix = matrix3.scale(matrix, texWidth, texHeight);
+    matrix = matrix3.scale(matrix, texWidth * sX, texHeight * sY);
 
     // rotation transform would go here
     matrix = matrix3.rotate(matrix, angle);

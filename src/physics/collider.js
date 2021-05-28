@@ -60,7 +60,7 @@ class Collider {
         }
     }
 
-    onDestroy(parent) {
+    onDelete() {
         if (this.isMoving) {
             removeMovingObject(this);
         }

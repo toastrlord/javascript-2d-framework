@@ -44,8 +44,6 @@ const generateTextCoords = function(glyphInfo, [xStart, yStart], text) {
     const {letterWidth, letterHeight, textureWidth, textureHeight} = glyphInfo;
     let positions = [];
     let texCoords = [];
-    console.log(glyphInfo);
-    console.log(text);
     for (let i = 0; i < text.length; i++) {
         const currentChar = text[i];
         const currentGlyphInfo = glyphInfo[currentChar];
