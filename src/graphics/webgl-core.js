@@ -129,19 +129,19 @@ function loadImageAndCreateTextureInfo(path) {
         height: 1,
         texture: tex,
     };
-    let img = new Image();
-    img.addEventListener('load', function() {
-        textureInfo.width = img.width;
-        textureInfo.height = img.height;
-        
-        gl.bindTexture(gl.TEXTURE_2D, textureInfo.texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-        console.log(textureInfo);
-    });
     
-    img.src = path;
-
-    return textureInfo;
+    return new Promise((resolve, reject) => {
+        let img = new Image();
+        img.src = path;
+        img.onload = () => {
+            textureInfo.width = img.width;
+            textureInfo.height = img.height;
+            gl.bindTexture(gl.TEXTURE_2D, textureInfo.texture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+            resolve(textureInfo);
+        }
+        img.onerror = reject;
+    });
 }
 
 /**

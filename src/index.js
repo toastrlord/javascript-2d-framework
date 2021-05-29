@@ -7,7 +7,7 @@ import { getGameObjects, addGameObject, removeGameObject } from './game-object-m
 import { addKeyBind } from 'input/key-manager';
 import { checkForCollisions } from './physics/collision-manager';
 import { createBrick, BRICK_WIDTH, BRICK_HEIGHT } from './brick';
-import { generateTextCoords, testGlyphInfo } from './graphics/font-util';
+import { drawText, chomps8by8Font } from './graphics/font-util';
 import { loadImageAndCreateTextureInfo, drawImages } from './graphics/webgl-core';
 
 const canvas = document.querySelector('#canvas');
@@ -78,18 +78,13 @@ function update() {
 }
 
 let ballsRemaining = 3;
-let fontSheet;
-let fontInfo;
 /**
  * Perform rendering
  */
 function render() {
     drawPrimitives();
-    fontInfo = generateTextCoords(testGlyphInfo, [0, height - 8], `balls remaining ${ballsRemaining}`);
-    drawImages(fontInfo.positions, fontInfo.texCoords, fontSheet.texture, [{sX: 2, sY: 2, angle: 0, tX: 0, tY: 0}]);
-
-    const scoreInfo = generateTextCoords(testGlyphInfo, [0, height - 16], `score ${score}`);
-    drawImages(scoreInfo.positions, scoreInfo.texCoords, fontSheet.texture, [{sX: 2, sY: 2, angle: 0, tX: 0, tY: 0}]);
+    drawText(0, height - 8, chomps8by8Font, `balls remaining ${ballsRemaining}`);
+    drawText(0, height - 16, chomps8by8Font, `score ${score}`);
 }
 
 /**
@@ -101,10 +96,13 @@ function loop() {
     window.requestAnimationFrame(loop);
 }
 
-function start() {
-    //console.log(generateTextCoords(testGlyphInfo, [0, 0], 'hello world!'));
+async function loadAssets() {
+    
+}
+
+async function start() {
     webGLSetup();
-    fontSheet = loadImageAndCreateTextureInfo('./assets/chomps 8x8 font.png');
+    loadAssets();
     const controllable = createPaddle(0, 0, 75, 15, 180, [1, 0, 1, 1]);
     addGameObject(controllable);
     serveBall();
