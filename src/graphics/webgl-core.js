@@ -112,7 +112,7 @@ function setupShaderVars(values) {
  *  texture starts with 1x1 pixels and updates when it is loaded
  * @param {*} path Location of the image
  */
-function loadImageAndCreateTextureInfo(path) {
+function loadImageAndCreateTextureInfo(path, width, height) {
     let tex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, tex);
     // fill text with 1x1 blue pixel
@@ -125,21 +125,28 @@ function loadImageAndCreateTextureInfo(path) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
     let textureInfo = {
-        width: 1, // size is unknown until load is done
-        height: 1,
+        width,
+        height,
         texture: tex,
     };
     
     return new Promise((resolve, reject) => {
         let img = new Image();
-        img.src = path;
         img.onload = () => {
-            textureInfo.width = img.width;
-            textureInfo.height = img.height;
+            if (textureInfo.width === undefined) {
+                textureInfo.width = img.width;
+            }
+            if (textureInfo.height === undefined) {
+                textureInfo.height = img.height;
+            }
             gl.bindTexture(gl.TEXTURE_2D, textureInfo.texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+            console.log('texture info: ');
+            console.log(textureInfo);
+            console.log(img);
             resolve(textureInfo);
         }
+        img.src = path;
         img.onerror = reject;
     });
 }

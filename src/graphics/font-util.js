@@ -17,12 +17,16 @@ const testGlyphInfo = generateGlyphInfo(
     fontInfo.letterWidth, fontInfo.letterHeight, 
     fontInfo.textureWidth, fontInfo.textureHeight);
 
-const chomps8by8Font = createFont(8, 8, './assets/chomps 8x8 font.png', [
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 
-    'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 
-    'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 
-    'y', 'z', '0', '1', '2', '3', '4', '5', 
-    '6', '7', '8', '9', '-', '*', '!', '?']);
+let chomps8by8Font;
+
+async function loadFonts() {
+    chomps8by8Font = await createFont(8, 8, './assets/chomps 8x8 font.png', [
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 
+        'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 
+        'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 
+        'y', 'z', '0', '1', '2', '3', '4', '5', 
+        '6', '7', '8', '9', '-', '*', '!', '?']);
+}
 
 /**
  * Create a new font from a spritesheet (all characters must be same size)
@@ -32,9 +36,8 @@ const chomps8by8Font = createFont(8, 8, './assets/chomps 8x8 font.png', [
  * @param {String} characters List of characters in spritesheet, starting from the top left
  */
 async function createFont(letterWidth, letterHeight, texturePath, characters) {
-    const textureInfo = await loadImageAndCreateTextureInfo(texturePath);
+    const textureInfo = await loadImageAndCreateTextureInfo(texturePath, 64, 40);
     const glyphInfo = generateGlyphInfo(characters, letterWidth, letterHeight, textureInfo.width, textureInfo.height);
-
     return {glyphInfo, texture: textureInfo.texture};
 }
 
@@ -105,4 +108,4 @@ function drawText(text, x, y, font, scale) {
     drawImages(textCoords.positions, textCoords.texCoords, font.texture, [{sX: scale, sY: scale, angle: 0, tX: 0, tY: 0}]);
 }
 
-export {testGlyphInfo, generateTextCoords, drawText, chomps8by8Font};
+export {testGlyphInfo, drawText, chomps8by8Font, loadFonts};
