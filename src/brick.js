@@ -2,7 +2,7 @@ import GameObject from './game-object';
 import DrawRectangleComponent from './graphics/drawComponent';
 import { RectCollider } from './physics/collider';
 import {removeGameObject} from './game-object-manager';
-import { addScore } from './index';
+import { addScore } from './breakout-game';
 
 const RED = [1, 0, 0, 1];
 const GREEN = [0, 1, 0, 1];

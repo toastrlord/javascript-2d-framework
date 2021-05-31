@@ -3,7 +3,7 @@ import DrawRectangleComponent from './graphics/drawComponent';
 import Trigger from './trigger';
 import { RectCollider } from './physics/collider';
 import { removeGameObject } from './game-object-manager';
-import { onBallOut } from './index';
+import { onBallOut } from './breakout-game';
 
 const WHITE = [1, 1, 1, 1];
 
