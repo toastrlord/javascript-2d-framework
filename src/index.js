@@ -13,8 +13,8 @@ const canvas = document.querySelector('#canvas');
 let width = canvas.width;
 let height = canvas.height;
 
-function webGLSetup() {
-    setContext(canvas);
+async function webGLSetup() {
+    await setContext(canvas);
     canvas.height = 600;
     height = canvas.height;
     canvas.width = 300;
@@ -75,7 +75,7 @@ async function loadAssets() {
 }
 
 async function start() {
-    webGLSetup();
+    await webGLSetup();
     await loadAssets();
     setupGame();
     loop();

@@ -1,5 +1,5 @@
 'use strict'
-
+import readFile from '../io/readfile';
 import { createProgramFromScripts, resizeCanvasToDisplaySize } from 'graphics/webgl-utils';
 import { matrix4, matrix3 } from 'math/matrix-util';
 
@@ -7,6 +7,7 @@ import { matrix4, matrix3 } from 'math/matrix-util';
 let gl;
 let currentProgramData;
 const primitiveDrawingData = {a_position: {}, a_color: {}, u_resolution: []};
+const imageDrawingData = [];
 let primitiveProgramData;
 let imageProgramData;
 let maxDepth = 0;
@@ -15,12 +16,17 @@ let maxDepth = 0;
  * Setup the WebGL render context
  * @param {HTMLCanvasElement} canvas 
  */
-function setContext(canvas) {
+async function setContext(canvas) {
     gl = canvas.getContext('webgl', { alpha: false });
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    primitiveProgramData = makeProgram(document.querySelector('#pixel-vertex-shader-2d').textContent, document.querySelector('#color-fragment-shader-2d').textContent);
-    imageProgramData = makeProgram(document.querySelector('#image-vertex-shader-2d').textContent,  document.querySelector('#image-fragment-shader-2d').textContent);
+    const primitiveDrawVertexSource = await readFile('./shaders/pixel-vertex-shader-2d.glsl');
+    const primtiveDrawFragmentSource = await readFile('./shaders/color-fragment-shader.glsl');
+    const imageDrawVertexSource = await readFile('./shaders/image-vertex-shader-2d.glsl');
+    const imageDrawFragmentSource = await readFile('./shaders/image-fragment-shader-2d.glsl');
+    console.log(primitiveDrawVertexSource);
+    primitiveProgramData = makeProgram(primitiveDrawVertexSource, primtiveDrawFragmentSource);
+    imageProgramData = makeProgram(imageDrawVertexSource, imageDrawFragmentSource);
     if (!gl) {
         alert('Error loading WebGL!');
     }
@@ -44,8 +50,10 @@ function makeProgram(vertexSource, shaderSource) {
  * @param {*} programData 
  */
 function useProgramData(programData) {
-    currentProgramData = programData;
-    gl.useProgram(currentProgramData.program); 
+    if (programData !== currentProgramData) {
+        currentProgramData = programData;
+        gl.useProgram(currentProgramData.program); 
+    }
 }
 
 /**
@@ -141,9 +149,6 @@ function loadImageAndCreateTextureInfo(path, width, height) {
             }
             gl.bindTexture(gl.TEXTURE_2D, textureInfo.texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-            console.log('texture info: ');
-            console.log(textureInfo);
-            console.log(img);
             resolve(textureInfo);
         }
         img.src = path;
@@ -259,6 +264,33 @@ function generatePrimitiveDrawingData() {
     }
     primitiveDrawingData.a_position = positions;
     primitiveDrawingData.a_color = colors;
+}
+
+/**
+ * 
+ * @param {[Number]} coords 
+ * @param {[Number]} texCoords 
+ * @param {*} textureInfo 
+ * @param {*} transformData 
+ * @param {Integer} depth Draw order for the data (lower depths are drawn first)
+ */
+function addImageDrawingData(coords, texCoords, textureInfo, transformData, depth) {
+    // need to sort by depth
+    // would also want to group draw calls with the same texture whenever possible
+    for (let i = 0; i < imageDrawingData.length; i++) {
+        const currentData = imageDrawingData[i];
+        if (currentData.depth >= depth || i === imageDrawingData.length - 1) {
+            imageDrawingData.splice(i, 0, { depth, a_position: coords, a_texcoord: texCoords, textureInfo, transform: transformData});
+            break;
+        }
+    }
+}
+
+/**
+ * 
+ */
+function generateImageDrawingData() {
+
 }
 
 /**
