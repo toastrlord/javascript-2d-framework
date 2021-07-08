@@ -1,5 +1,5 @@
 'use strict'
-
+import readFile from '../io/readfile';
 import { createProgramFromScripts, resizeCanvasToDisplaySize } from 'graphics/webgl-utils';
 import { matrix4, matrix3 } from 'math/matrix-util';
 
@@ -7,6 +7,7 @@ import { matrix4, matrix3 } from 'math/matrix-util';
 let gl;
 let currentProgramData;
 const primitiveDrawingData = {a_position: {}, a_color: {}, u_resolution: []};
+const imageDrawingData = [];
 let primitiveProgramData;
 let imageProgramData;
 let maxDepth = 0;
@@ -15,10 +16,17 @@ let maxDepth = 0;
  * Setup the WebGL render context
  * @param {HTMLCanvasElement} canvas 
  */
-function setContext(canvas) {
-    gl = canvas.getContext('webgl');
-    primitiveProgramData = makeProgram(document.querySelector('#pixel-vertex-shader-2d').textContent, document.querySelector('#color-fragment-shader-2d').textContent);
-    imageProgramData = makeProgram(document.querySelector('#image-vertex-shader-2d').textContent,  document.querySelector('#image-fragment-shader-2d').textContent);
+async function setContext(canvas) {
+    gl = canvas.getContext('webgl', { alpha: false });
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    const primitiveDrawVertexSource = await readFile('./shaders/pixel-vertex-shader-2d.glsl');
+    const primtiveDrawFragmentSource = await readFile('./shaders/color-fragment-shader.glsl');
+    const imageDrawVertexSource = await readFile('./shaders/image-vertex-shader-2d.glsl');
+    const imageDrawFragmentSource = await readFile('./shaders/image-fragment-shader-2d.glsl');
+    console.log(primitiveDrawVertexSource);
+    primitiveProgramData = makeProgram(primitiveDrawVertexSource, primtiveDrawFragmentSource);
+    imageProgramData = makeProgram(imageDrawVertexSource, imageDrawFragmentSource);
     if (!gl) {
         alert('Error loading WebGL!');
     }
@@ -42,8 +50,10 @@ function makeProgram(vertexSource, shaderSource) {
  * @param {*} programData 
  */
 function useProgramData(programData) {
-    currentProgramData = programData;
-    gl.useProgram(currentProgramData.program); 
+    if (programData !== currentProgramData) {
+        currentProgramData = programData;
+        gl.useProgram(currentProgramData.program); 
+    }
 }
 
 /**
@@ -110,7 +120,7 @@ function setupShaderVars(values) {
  *  texture starts with 1x1 pixels and updates when it is loaded
  * @param {*} path Location of the image
  */
-function loadImageAndCreateTextureInfo(path) {
+function loadImageAndCreateTextureInfo(path, width, height) {
     let tex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, tex);
     // fill text with 1x1 blue pixel
@@ -123,23 +133,27 @@ function loadImageAndCreateTextureInfo(path) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
     let textureInfo = {
-        width: 1, // size is unknown until load is done
-        height: 1,
+        width,
+        height,
         texture: tex,
     };
-    let img = new Image();
-    img.addEventListener('load', function() {
-        textureInfo.width = img.width;
-        textureInfo.height = img.height;
-        
-        gl.bindTexture(gl.TEXTURE_2D, textureInfo.texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-        console.log(textureInfo);
-    });
     
-    img.src = path;
-
-    return textureInfo;
+    return new Promise((resolve, reject) => {
+        let img = new Image();
+        img.onload = () => {
+            if (textureInfo.width === undefined) {
+                textureInfo.width = img.width;
+            }
+            if (textureInfo.height === undefined) {
+                textureInfo.height = img.height;
+            }
+            gl.bindTexture(gl.TEXTURE_2D, textureInfo.texture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+            resolve(textureInfo);
+        }
+        img.src = path;
+        img.onerror = reject;
+    });
 }
 
 /**
@@ -159,6 +173,7 @@ function createTransformMatrices(transforms) {
 
 
 function drawImages(positions, texCoords, texture, transformData) {
+    useProgramData(imageProgramData);
     // TODO: right now, only binds a single texture to draw
     // TODO: positions and texCoords are the same pairs right now- will want to use indexing to make this a bit faster, though we'll want to retain
     // the ability to use different texCoords for when we use texture atlases
@@ -166,21 +181,22 @@ function drawImages(positions, texCoords, texture, transformData) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     setupAttribBuffer(currentProgramData.attributeData['a_position'], positions, gl.DYNAMIC_DRAW);
     setupAttribBuffer(currentProgramData.attributeData['a_texcoord'], texCoords, gl.DYNAMIC_DRAW);
-    setupAttribBuffer(currentProgramData.attributeData['a_matrix'], matrices, gl.DYNAMIC_DRAW);
+    //setupAttribBuffer(currentProgramData.attributeData['a_matrix'], matrices, gl.DYNAMIC_DRAW);
 
     setupUniform(currentProgramData.uniformData['u_resolution'], [canvas.width, canvas.height]);
     let textureLocation = currentProgramData.uniformData['u_texture'].location;
     gl.uniform1i(textureLocation, 0);
 
+    let matrixLocation = currentProgramData.uniformData['u_matrix'].location;
+    // TODO: NEEDS TO BE UPDATED! GLSL CODE NEEDS TO TAKE MATRICES VIA ATTRIBUTE, NOT UNIFORM
+    gl.uniformMatrix3fv(matrixLocation, false, matrices[0]);
+
     gl.drawArrays(gl.TRIANGLES, 0, positions.length / 2);
 }
 
-function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHeight, dstX, dstY, angle) {
+function drawImage(imageProgramData, positions, texcoords, texture, texWidth, texHeight, dstX, dstY, angle, sX, sY) {
     useProgramData(imageProgramData);
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-
-    // TODO: load in our shader program, or just remove the arg and set useProgramData from index.js
-    useProgramData(imageProgramData);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
 
     setupAttribBuffer(imageProgramData.attributeData['a_position'], positions, gl.DYNAMIC_DRAW);
     setupAttribBuffer(imageProgramData.attributeData['a_texcoord'], texcoords, gl.DYNAMIC_DRAW);
@@ -191,7 +207,7 @@ function drawImage(imageProgramData, positions, texcoords, tex, texWidth, texHei
     let matrix = matrix3.identity();
 
     // this matrix scales our unit quad up to texWidth, texHeight
-    matrix = matrix3.scale(matrix, texWidth, texHeight);
+    matrix = matrix3.scale(matrix, texWidth * sX, texHeight * sY);
 
     // rotation transform would go here
     matrix = matrix3.rotate(matrix, angle);
@@ -251,9 +267,37 @@ function generatePrimitiveDrawingData() {
 }
 
 /**
+ * 
+ * @param {[Number]} coords 
+ * @param {[Number]} texCoords 
+ * @param {*} textureInfo 
+ * @param {*} transformData 
+ * @param {Integer} depth Draw order for the data (lower depths are drawn first)
+ */
+function addImageDrawingData(coords, texCoords, textureInfo, transformData, depth) {
+    // need to sort by depth
+    // would also want to group draw calls with the same texture whenever possible
+    for (let i = 0; i < imageDrawingData.length; i++) {
+        const currentData = imageDrawingData[i];
+        if (currentData.depth >= depth || i === imageDrawingData.length - 1) {
+            imageDrawingData.splice(i, 0, { depth, a_position: coords, a_texcoord: texCoords, textureInfo, transform: transformData});
+            break;
+        }
+    }
+}
+
+/**
+ * 
+ */
+function generateImageDrawingData() {
+
+}
+
+/**
  * Draw primitives (i.e. rectangles) using the values supplied in primitiveDrawingData
  */
 function drawPrimitives() {
+    gl.clear(gl.COLOR_BUFFER_BIT);
     generatePrimitiveDrawingData();
     primitiveDrawingData.u_resolution = [gl.canvas.width, gl.canvas.height];
     useProgramData(primitiveProgramData);

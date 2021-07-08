@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+    <link rel='stylesheet' href='style.css'>
+    <head>
+        <script id='clipspace-vertex-shader-2d' type='glsl'>
+            // simple vertex shader, expecting positions to be in clipspace
+            // attribute will receive data from a buffer
+            attribute vec4 a_position;
+
+            //all shaders have a main function
+            void main() {
+                // gl_Position is a special var for a vertex shaders
+                gl_Position = a_position;
+            }
+        </script>
+        <script id='static-color-fragment-shader-2d' type='glsl'>
+            // fragment shaders do not have a default precision
+            // so it needs to be set here
+            precision mediump float;
+
+            void main() {
+                // gl_FragColor is a special var for fragment shaders
+                gl_FragColor = vec4(1, 0, 0.5, 1); //reddish-purple color
+            }
+        </script>
+        <script id='uniform-color-fragment-shader-2d' type='glsl'>
+            precision mediump float;
+
+            uniform vec4 u_color;
+
+            void main() {
+                gl_FragColor = u_color;
+            }
+        </script>
+    </head>
+        <body>
+            <canvas id="canvas">
+                Canvas error!
+            </canvas>
+            <script src="main.js"></script>
+        </body>
+</html>

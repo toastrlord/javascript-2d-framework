@@ -1,16 +1,39 @@
 'use strict'
-import BouncingSquare from './bouncing-square';
-import ControllableSquare from './controllable-square';
-import {drawPrimitives, setContext, clear} from 'graphics/webgl-core';
-import {getGameObjects, addGameObject, removeGameObject} from './game-object-manager';
-import {addKeyBind} from 'input/key-manager';
+import createBall from './ball';
+import { drawPrimitives, setContext, clear } from 'graphics/webgl-core';
+import { getGameObjects, addGameObject, removeGameObject } from './game-object-manager';
+import { addKeyBind } from 'input/key-manager';
+import { checkForCollisions } from './physics/collision-manager';
+import { createBrick, BRICK_WIDTH, BRICK_HEIGHT } from './brick';
+import { drawText, chomps8by8Font, loadFonts } from './graphics/font-util';
+import { loadImageAndCreateTextureInfo, drawImages } from './graphics/webgl-core';
+import { setupGame, ballsRemaining, score } from './breakout-game';
 
 const canvas = document.querySelector('#canvas');
-const width = canvas.width;
-const height = canvas.height;
+let width = canvas.width;
+let height = canvas.height;
 
-function webGLSetup() {
-    setContext(canvas);
+async function webGLSetup() {
+    await setContext(canvas);
+    canvas.height = 600;
+    height = canvas.height;
+    canvas.width = 300;
+    clear([0, 0, 0, 1]);
+}
+
+function resizeCanvas(newWidth, newHeight) {
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+    width = newWidth;
+    height = newHeight;
+}
+
+function getCanvasWidth() {
+    return width;
+}
+
+function getCanvasHeight() {
+    return height;
 }
 
 let timeStamp = Date.now();
@@ -25,6 +48,7 @@ function update() {
     getGameObjects().forEach(obj => {
         obj.update(deltaTime);
     });
+    checkForCollisions();
     timeStamp = now;
 }
 
@@ -33,6 +57,12 @@ function update() {
  */
 function render() {
     drawPrimitives();
+    drawText(`balls remaining ${ballsRemaining}`, 0, height - 8, chomps8by8Font, 1);
+    drawText(`score ${score}`, 0, height - 16, chomps8by8Font, 1);
+    if (ballsRemaining === 0) {
+        const gameOverMessage = 'game over!';
+        drawText('game over!', width / 2 - (gameOverMessage.length * 8 / 2), height / 2, chomps8by8Font, 1);
+    }
 }
 
 /**
@@ -44,16 +74,17 @@ function loop() {
     window.requestAnimationFrame(loop);
 }
 
-function start() {
-    webGLSetup();
-    for (let i = 0; i < 50; i++) {
-        const speed = (Math.random() * 80) + 20;
-        let newSquare = BouncingSquare.generateRandomSquare(width, height, 10, speed, 2);
-        addGameObject(newSquare);
-    }
-    let controllable = new ControllableSquare(0, 0, 25, 25, width, height, 100, [1, 0, 1, 1], 0);
-    addGameObject(controllable);
+async function loadAssets() {
+    await loadFonts();
+}
+
+async function start() {
+    await webGLSetup();
+    await loadAssets();
+    setupGame();
     loop();
 }
 
 start();
+
+export {getCanvasWidth, getCanvasHeight};
