@@ -22,10 +22,8 @@ function serveBall() {
 }
 
 function onBallOut() {
-    if (ballsRemaining === 0) {
-        console.log('Game Over!');
-    } else {
-        ballsRemaining --;
+    ballsRemaining --;
+    if (ballsRemaining > 0) {
         serveBall();
     }
 }

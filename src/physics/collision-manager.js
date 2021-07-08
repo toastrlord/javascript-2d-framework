@@ -36,7 +36,7 @@ function checkForCollisions() {
                //top/bottom collision
                if (distY < distX) {
                    mover.yVelocity = -mover.yVelocity;
-                   mover.xVelocity = mover.xVelocity + staticObj.xVelocity;
+                   //mover.xVelocity = mover.xVelocity + staticObj.xVelocity;
                    
                    if (Math.abs(aboveDist) < Math.abs(belowDist)) {
                     mover.parent.y = staticObj.parent.y + staticObj.height;
@@ -45,7 +45,7 @@ function checkForCollisions() {
                    }
                } else { //otherwise must be horizontal collision
                     mover.xVelocity = -mover.xVelocity;
-                    mover.yVelocity = mover.yVelocity + staticObj.yVelocity;
+                    //mover.yVelocity = mover.yVelocity + staticObj.yVelocity;
                     if (Math.abs(leftDist) < Math.abs(rightDist)) {
                         mover.parent.x = staticObj.parent.x - mover.width;
                     } else {

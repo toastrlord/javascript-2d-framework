@@ -59,6 +59,10 @@ function render() {
     drawPrimitives();
     drawText(`balls remaining ${ballsRemaining}`, 0, height - 8, chomps8by8Font, 1);
     drawText(`score ${score}`, 0, height - 16, chomps8by8Font, 1);
+    if (ballsRemaining === 0) {
+        const gameOverMessage = 'game over!';
+        drawText('game over!', width / 2 - (gameOverMessage.length * 8 / 2), height / 2, chomps8by8Font, 1);
+    }
 }
 
 /**
