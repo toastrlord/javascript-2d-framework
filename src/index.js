@@ -1,12 +1,8 @@
 'use strict'
-import createBall from './ball';
 import { drawPrimitives, setContext, clear } from 'graphics/webgl-core';
-import { getGameObjects, addGameObject, removeGameObject } from './game-object-manager';
-import { addKeyBind } from 'input/key-manager';
+import { getGameObjects } from './game-object-manager';
 import { checkForCollisions } from './physics/collision-manager';
-import { createBrick, BRICK_WIDTH, BRICK_HEIGHT } from './brick';
 import { drawText, chomps8by8Font, loadFonts } from './graphics/font-util';
-import { loadImageAndCreateTextureInfo, drawImages } from './graphics/webgl-core';
 import { setupGame, ballsRemaining, score } from './breakout-game';
 
 const canvas = document.querySelector('#canvas');
