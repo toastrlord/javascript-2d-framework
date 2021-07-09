@@ -28,6 +28,7 @@ Currently, the primitive-shapes.js features three different drawable shapes:
 2. Triangles 
 3. Circles
 
+Draw calls are sorted based on depth; larger depths are drawn later, allowing shapes to overlap if desired.
 Additionally, text can be rendered to the screen using the included 8x8 font using font-util.js.
 
 ## Shaders
@@ -43,7 +44,7 @@ Keyboard input is handled via key-manager.js. This includes utility functions fo
 When the key-manager module is loaded, it attaches an event listener directly to the window object, and dispatches the event to the appropriate key action, if one exists.
 
 # Physics
-Currently, collision-manager.js keeps track of two different categories of `Collider`s; moving objects and static objects. This is done for performance purposes- moving objects can only collide with static objects, and that neither static-static nor moving-moving collisions are accounted for. This allows for `O(m*n)` scaling in performance, instead of `O((m+n)^2)`, where `m` is the number of moving objects, and `n` is the number of static objects. Although this is still not ideal, it is sufficient for Breakout since only the ball is categorized as a moving object.
+Currently, collision-manager.js keeps track of two different categories of `Colliders`; moving objects and static objects. This is done for performance purposes- moving objects can only collide with static objects, and that neither static-static nor moving-moving collisions are accounted for. This allows for `O(m*n)` scaling in performance, instead of `O((m+n)^2)`, where `m` is the number of moving objects, and `n` is the number of static objects. Although this is still not ideal, it is sufficient for Breakout since only the ball is categorized as a moving object.
 
 collision-manager.js also determines whether the collision is vertical or horizontal, and negates the proper velocity.
 
