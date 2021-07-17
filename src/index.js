@@ -32,20 +32,23 @@ function getCanvasHeight() {
     return height;
 }
 
-let timeStamp = Date.now();
+let prevTime;
 
 /**
  * Perform game logic
  */
-function update() {
-    let now = Date.now();
-    // convert to milliseconds
-    let deltaTime = (now - timeStamp) / 1000;
+function update(currentTime) {
+    if (!currentTime) {
+        // timeStamp returns undefined on start for some reason,but returns a value every other frame
+        return;
+    }
+    let deltaTime = (prevTime ? currentTime - prevTime : currentTime)/ 1000;
+    
     getGameObjects().forEach(obj => {
         obj.update(deltaTime);
     });
     checkForCollisions();
-    timeStamp = now;
+    prevTime = currentTime;
 }
 
 /**
@@ -64,8 +67,8 @@ function render() {
 /**
  * Main game loop
  */
-function loop() {
-    update();
+function loop(currentTime) {
+    update(currentTime);
     render();
     window.requestAnimationFrame(loop);
 }
